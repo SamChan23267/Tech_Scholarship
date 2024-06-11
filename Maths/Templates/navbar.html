@@ -1,0 +1,30 @@
+<head>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='navbar.css') }}">
+</head>
+<nav>
+<header class="navbar">
+    <div class="logo"><a href="#home">SHC Maths Academy</a></div>
+    <nav class="nav-links">
+        <div class="dropdown">
+            <button class="dropbtn">Courses</button>
+            <div class="dropdown-content">
+                <a href="level1.html">Level 1</a>
+                <a href="level2.html">Level 2</a>
+                <a href="level3.html">Level 3</a>
+            </div>
+        </div>
+        <!-- Search form -->
+        <form action="/search" method="get" class="search-form">
+            <input type="text" name="q" placeholder="Search...">
+            <button type="submit">Search</button>
+        </form>
+        <a href="#forum">Forum</a>
+        <a href="#contact">Contact Us</a>
+    </nav>
+    <div class="auth-buttons">
+        <button onclick="location.href='auth.html?action=login'" class='login'>Login</button>
+        <button onclick="location.href='auth.html?action=signup'" class='sign-up'>Sign up</button>
+    </div> 
+    <button class="hamburger-menu" onclick="toggleMenu()">☰</button>
+</header>
+</nav>
