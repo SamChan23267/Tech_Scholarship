@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='auth.css') }}">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <title>SHC Maths Academy Authentication</title>
+</head>
+<header class="navbar">
+    <div class="logo">SHC Maths Academy</div>
+    <nav class="nav-links">
+        <div class="dropdown">
+            <button class="dropbtn">Courses</button>
+            <div class="dropdown-content">
+                <a href="level1.html">Level 1</a>
+                <a href="level2.html">Level 2</a>
+                <a href="level3.html">Level 3</a>
+            </div>
+        </div>
+        <!-- Search form -->
+        <form action="/search" method="get" class="search-form">
+            <input type="text" name="q" placeholder="Search...">
+            <button type="submit">Search</button>
+        </form>
+        <a href="#forum">Forum</a>
+        <a href="#contact">Contact Us</a>
+    </nav>
+    <div class="auth-buttons">
+        <button onclick="href='login.html'">Login</button>
+        <button onclick="location.href='#signup'" class='sign-up'>Sign up</button> 
+    </div> 
+    <button class="hamburger-menu" onclick="toggleMenu()">☰</button>
+</header>
+<body>
+    <div class="login-container">
+        <div class="left-section">
+            <h2>Welcome Back</h2>
+            <p>Please log in using your personal information to stay connected with us.</p>
+        </div>
+        <div class="right-section">
+                <div class="form-container">
+                <!-- Toggle Buttons -->
+                <div class="toggle-buttons">
+                    <button id="signup-btn" class="toggle-btn">Sign Up</button>
+                    <button id="login-btn" class="toggle-btn active">Log In</button>
+                </div>
+
+                <!-- Login Form -->
+                <form class="login-form" id="login-form">
+                  <h2>Login</h2>
+                    <div class="input-group">
+                        <input type="email" id="email" name="email" required>
+                        <label for="email">Email *</label>
+                    </div>
+                    <div class="input-group password-container">
+                        <input type="password" id="password" name="password" required>
+                        <label for="password">Password *</label>
+                        <span class="toggle-password" onclick="togglePasswordVisibility()">
+                            <i class="fas fa-eye"></i>
+                        </span>
+                    </div>
+                    <a href="#" class="forgot-password">Forgot password?</a>
+                    <button type="submit">Log in</button>
+                </form>
+
+                <!-- Signup Form (hidden by default) -->
+                <form class="login-form hidden" id="signup-form">
+                    <!-- Add your signup form fields here -->
+                </form>
+
+                <div class="signup">
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+    // Function to show the correct form based on the action parameter
+    function showForm(action) {
+        const loginForm = document.getElementById('login-form');
+        const signupForm = document.getElementById('signup-form');
+        const loginBtn = document.getElementById('login-btn');
+        const signupBtn = document.getElementById('signup-btn');
+
+        // Update the URL without reloading the page
+        const newUrl = action === 'signup' ? 'auth.html?action=signup' : 'auth.html?action=login';
+        history.pushState({ action: action }, '', newUrl);
+
+        if (action === 'signup') {
+            loginForm.classList.add('hidden');
+            signupForm.classList.remove('hidden');
+            loginBtn.classList.remove('active');
+            signupBtn.classList.add('active');
+        } else {
+            loginForm.classList.remove('hidden');
+            signupForm.classList.add('hidden');
+            loginBtn.classList.add('active');
+            signupBtn.classList.remove('active');
+        }
+    }
+
+    // Get the action parameter from the URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const action = urlParams.get('action') || 'login'; // Default to 'login'
+
+    // Show the correct form when the page loads
+    showForm(action);
+
+    // Event listeners for the navigation buttons
+    document.getElementById('login-btn').addEventListener('click', function() {
+        showForm('login');
+    });
+
+    document.getElementById('signup-btn').addEventListener('click', function() {
+        showForm('signup');
+    });
+
+    // Function to toggle password visibility
+    function togglePasswordVisibility() {
+        const passwordInput = document.getElementById('password');
+        const togglePasswordIcon = document.querySelector('.toggle-password i');
+        const isPasswordVisible = passwordInput.type === 'password';
+        passwordInput.type = isPasswordVisible ? 'text' : 'password';
+        togglePasswordIcon.className = isPasswordVisible ? 'fas fa-eye-slash' : 'fas fa-eye';
+        passwordInput.classList.toggle('password-visible', isPasswordVisible);
+    }
+
+    // Attach the togglePasswordVisibility function to the password visibility toggle element
+    const togglePasswordElements = document.querySelectorAll('.toggle-password');
+    togglePasswordElements.forEach(toggleElement => {
+        toggleElement.addEventListener('click', togglePasswordVisibility);
+    });
+});
+
+    </script>
+</body>
+</html>

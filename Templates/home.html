@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SHC Maths Academy</title>
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='home.css') }}">
+</head>
+<body>
+
+<header class="navbar">
+    <div class="logo"><a href="#home">SHC Maths Academy</a></div>
+    <nav class="nav-links">
+        <div class="dropdown">
+            <button class="dropbtn">Courses</button>
+            <div class="dropdown-content">
+                <a href="level1.html">Level 1</a>
+                <a href="level2.html">Level 2</a>
+                <a href="level3.html">Level 3</a>
+            </div>
+        </div>
+        <!-- Search form -->
+        <form action="/search" method="get" class="search-form">
+            <input type="text" name="q" placeholder="Search...">
+            <button type="submit">Search</button>
+        </form>
+        <a href="#forum">Forum</a>
+        <a href="#contact">Contact Us</a>
+    </nav>
+    <div class="auth-buttons">
+        <button onclick="location.href='auth.html?action=login'" class='login'>Login</button>
+        <button onclick="location.href='auth.html?action=signup'" class='sign-up'>Sign up</button>
+    </div> 
+    <button class="hamburger-menu" onclick="toggleMenu()">☰</button>
+</header>
+
+<section class="intro">
+    <h1>Welcome to SHC Maths Academy</h1>
+    <p>Providing quality education in NCEA Mathematics.</p>
+    <p>Access high-quality resources, interactive learning modules, and personalized learning journeys.</p>
+    <p>Join our supportive online community of students and teachers.</p>
+</section>
+
+<section class="topics">
+    <h2>Topics</h2>
+    <div class="level">
+        <h3>Level 1</h3>
+        <ul>
+            <li><a href="level1.html#number">Number</a></li>
+            <li><a href="level1.html#algebra">Algebra and Graphs</a></li>
+            <li><a href="level1.html#measurement">Measurement</a></li>
+            <li><a href="level1.html#geometry">Geometry and Trigonometry</a></li>
+            <li><a href="level1.html#statistics">Statistics and Probability</a></li>
+        </ul>
+    </div>
+    <div class="level">
+        <h3>Level 2</h3>
+        <ul>
+            <li><a href="level2.html#91256">91256 Apply co-ordinate geometry methods in solving problems</a></li>
+            <li><a href="level2.html#91257">91257 Apply graphical methods in solving problems</a></li>
+            <li><a href="level2.html#91258">91258 Apply sequences and series in solving problems</a></li>
+            <li><a href="level2.html#91259">91259 Apply trigonometric relationships in solving problems</a></li>
+            <li><a href="level2.html#91260">91260 Apply network methods in solving problems</a></li>
+            <li><a href="level2.html#91261">91261 Apply algebra methods in solving problems</a></li>
+            <li><a href="level2.html#91262">91262 Apply calculus methods in solving problems</a></li>
+            <li><a href="level2.html#91264">91264 Use statistical methods to make an inference</a></li>
+            <li><a href="level2.html#91267">91267 Apply probability methods in solving problems</a></li>
+            <li><a href="level2.html#91268">91268 Investigate a situation involving elements of chance using a simulation</a></li>
+        </ul>
+    </div>
+    <div class="level">
+        <h3>Level 3</h3>
+        <ul>
+            <li><a href="level3.html#91575">91575 Apply trigonometric methods in solving problems</a></li>
+            <li><a href="level3.html#91577">91577 Apply algebraic methods in solving problems</a></li>
+            <li><a href="level3.html#91578">91578 Apply differentiation methods in solving problems</a></li>
+            <li><a href="level3.html#91579">91579 Apply integration methods in solving problems</a></li>
+        </ul>
+    </div>
+</section>
+
+<!-- Rest of your webpage content goes here -->
+
+<script src='script.js'></script> <!-- If you have any JavaScript -->
+<script>
+function toggleMenu() {
+    const navLinks = document.querySelector('.nav-links');
+    navLinks.classList.toggle('active');
+}
+</script>
+</body>
+</html>
