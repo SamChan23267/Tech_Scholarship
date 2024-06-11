@@ -3,10 +3,11 @@ from flask import Flask, render_template, request
 app = Flask(__name__, template_folder='templates')
 
 @app.route('/')
+@app.route('/home')
 def home():
     return render_template('home.html')
 
-@app.route('/auth.html')
+@app.route('/auth')
 def auth():
     action = request.args.get('action', 'login')  # Default action is 'login'
     if action == 'signup':

@@ -10,10 +10,16 @@
 </head>
     {% include 'navbar.html' %}
 <body>
-    <div class="login-container">
+    <div class="auth-container">
         <div class="left-section">
-            <h2>Welcome Back</h2>
-            <p>Please log in using your personal information to stay connected with us.</p>
+            <div class="login-welcome" id="login-welcome">
+                <h2>Welcome Back</h2>
+                <p>Please log in using your personal information to stay connected with us.</p>
+            </div>
+            <div class="signup-welcome hidden" id="signup-welcome">
+                <h2>Create an account</h2>
+                <p>Please create an account using your personal information.</p>
+            </div>
         </div>
         <div class="right-section">
                 <div class="form-container">
@@ -59,21 +65,29 @@
     function showForm(action) {
         const loginForm = document.getElementById('login-form');
         const signupForm = document.getElementById('signup-form');
+        const loginWelcome = document.getElementById('login-welcome');
+        const signupWelcome = document.getElementById('signup-welcome');
         const loginBtn = document.getElementById('login-btn');
         const signupBtn = document.getElementById('signup-btn');
 
         // Update the URL without reloading the page
-        const newUrl = action === 'signup' ? 'auth.html?action=signup' : 'auth.html?action=login';
+        const newUrl = action === 'signup' ? 'auth?action=signup' : 'auth?action=login';
         history.pushState({ action: action }, '', newUrl);
 
         if (action === 'signup') {
             loginForm.classList.add('hidden');
-            signupForm.classList.remove('hidden');
+            signupForm.classList.remove('hidden');            
+            loginWelcome.classList.add('hidden');
+            signupWelcome.classList.remove('hidden');
             loginBtn.classList.remove('active');
             signupBtn.classList.add('active');
+
+
         } else {
             loginForm.classList.remove('hidden');
             signupForm.classList.add('hidden');
+            loginWelcome.classList.remove('hidden');
+            signupWelcome.classList.add('hidden');
             loginBtn.classList.add('active');
             signupBtn.classList.remove('active');
         }
