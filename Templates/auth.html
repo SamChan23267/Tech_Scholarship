@@ -8,31 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <title>SHC Maths Academy Authentication</title>
 </head>
-<header class="navbar">
-    <div class="logo">SHC Maths Academy</div>
-    <nav class="nav-links">
-        <div class="dropdown">
-            <button class="dropbtn">Courses</button>
-            <div class="dropdown-content">
-                <a href="level1.html">Level 1</a>
-                <a href="level2.html">Level 2</a>
-                <a href="level3.html">Level 3</a>
-            </div>
-        </div>
-        <!-- Search form -->
-        <form action="/search" method="get" class="search-form">
-            <input type="text" name="q" placeholder="Search...">
-            <button type="submit">Search</button>
-        </form>
-        <a href="#forum">Forum</a>
-        <a href="#contact">Contact Us</a>
-    </nav>
-    <div class="auth-buttons">
-        <button onclick="href='login.html'">Login</button>
-        <button onclick="location.href='#signup'" class='sign-up'>Sign up</button> 
-    </div> 
-    <button class="hamburger-menu" onclick="toggleMenu()">☰</button>
-</header>
+    {% include 'navbar.html' %}
 <body>
     <div class="login-container">
         <div class="left-section">
