@@ -3,9 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='auth.css') }}">
-    <!-- Font Awesome for icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='auth.css') }}"> 
     <title>SHC Maths Academy Authentication</title>
 </head>
     {% include 'navbar.html' %}
@@ -39,16 +37,34 @@
                     <div class="input-group password-container">
                         <input type="password" id="password" name="password" required>
                         <label for="password">Password *</label>
-                        <span class="toggle-password" onclick="togglePasswordVisibility()">
-                            <i class="fas fa-eye"></i>
-                        </span>
+                        <span class="toggle-password" onclick="togglePasswordVisibility()">                        </span>
                     </div>
                     <a href="#" class="forgot-password">Forgot password?</a>
                     <button type="submit">Log in</button>
                 </form>
 
                 <!-- Signup Form (hidden by default) -->
-                <form class="login-form hidden" id="signup-form">
+                <form class="signup-form hidden" id="signup-form">
+                    <h2>Sign Up</h2>
+                        <div class="input-group">
+                            <input type="first name" id="first name" name="first name" required>
+                            <label for="first name">First Name *</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="last name" id="last name" name="last name" required>
+                            <label for="last name">Last Name *</label>
+                        </div>
+                        <div class="input-group"> 
+                            <input type="register email" id="register email" name="register email" required>
+                            <label for="register email">Register Email *</label>
+                        </div>
+                        <div class="input-group">
+                            <input type="password" id="password" name="password" required>
+                            <label for="password">Create Password *</label>
+                        </div>
+                    <button type="submit">Sign Up</button>
+                            
+                        
                     <!-- Add your signup form fields here -->
                 </form>
 
@@ -115,7 +131,6 @@
         const togglePasswordIcon = document.querySelector('.toggle-password i');
         const isPasswordVisible = passwordInput.type === 'password';
         passwordInput.type = isPasswordVisible ? 'text' : 'password';
-        togglePasswordIcon.className = isPasswordVisible ? 'fas fa-eye-slash' : 'fas fa-eye';
         passwordInput.classList.toggle('password-visible', isPasswordVisible);
     }
 
