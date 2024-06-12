@@ -1,3 +1,37 @@
+.flash-message {
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    font-family: Arial, sans-serif;
+}
+
+.flash-message.success {
+    color: #155724;
+    background-color: #d4edda;
+    border-color: #c3e6cb;
+}
+
+.flash-message.alert {
+    color: #725e1c;
+    background-color: #f8e7d7;
+    border-color: #f5e5c6;
+}
+
+.flash-message.warning {
+    color: #721c24;
+    background-color: #f8d7da;
+    border-color: #f5c6cb;
+}
+
+.flash-message.info {
+    color: #0c5460;
+    background-color: #d1ecf1;
+    border-color: #bee5eb;
+}
+
 .auth-container {
     display: flex;
     max-width: 800px;

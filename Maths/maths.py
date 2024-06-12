@@ -7,8 +7,7 @@ app.secret_key = 'your_secret_key'  # Needed for session management
 users = {
     'user@example.com': {
         'password': 'password123',
-        'first_name': 'John',
-        'last_name': 'Doe'
+        'username': 'user'
     }
 }
 
@@ -23,32 +22,41 @@ def auth():
     if request.method == 'POST':
         if action == 'signup':
             email = request.form.get('register email')
-            password = request.form.get('password')
-            first_name = request.form.get('first name')
-            last_name = request.form.get('last name')
-            print(f"Signup form data: {email}, {password}, {first_name}, {last_name}")
+            password = request.form.get('create password')
+            username = request.form.get('username')
+            print(f"Signup form data: {email}, {password}, {username}")
             if email in users:
                 flash('Email already exists. Please log in.')
                 return redirect(url_for('auth', action='login'))
-            users[email] = {'password': password, 'first_name': first_name, 'last_name': last_name}
+            if username in users:
+                flash('Username already exist. Please try another username')
+            users[email] = {'password': password, 'username': username}
             flash('Signup successful! Please log in.')
             return redirect(url_for('auth', action='login'))
         else:
             email = request.form.get('email')
             password = request.form.get('password')
+            if email not in users:
+                flash('Email not found. Please sign up.', 'alert')
+                return redirect(url_for('auth', action='signup'))
             print(f"Login form data: {email}, {password}")
             user = users.get(email)
             if user and user['password'] == password:
                 session['user'] = email
                 return redirect(url_for('user_home'))
+            flash('Invalid credentials. Please try again.', 'alert')
             return redirect(url_for('auth', action='login'))
+        
     return render_template('auth.html', action=action)
+
+
 
 @app.route('/logout')
 def logout():
     session.pop('user', None)
+    flash('You have been locked out!')
     return redirect(url_for('home'))
-
+    
 
 if __name__ == '__main__':
     app.run(debug=True)

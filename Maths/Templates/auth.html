@@ -4,12 +4,21 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='auth.css') }}"> 
+
     <title>SHC Maths Academy Authentication</title>
 </head>
     {% include 'navbar_unauth.html' %}
 <body>
-    <div class="auth-container">
+
+    {% for category, message in get_flashed_messages(with_categories=True) %}
         
+        <div class="flash-message {{ category }} alert-dismissible">
+            {{ message }}
+     
+    {% endfor %}
+
+    
+    <div class="auth-container">
         <div class="left-section">
             <div class="login-welcome" id="login-welcome">
                 <h2>Welcome Back</h2>
@@ -24,8 +33,9 @@
             <div class="form-container">
                 <!-- Toggle Buttons -->
                 <div class="toggle-buttons">
-                    <button id="signup-btn" class="toggle-btn" onclick="showSignup()">Sign Up</button>
-                    <button id="login-btn" class="toggle-btn active" onclick="showLogin()">Log In</button>
+                    <button id="signup-btn" class="toggle-btn" onclick="location.href='auth?action=signup'">Sign Up</button>
+                    <button id="login-btn" class="toggle-btn active" onclick="location.href='auth?action=login'">Log In</button>
+
                 </div>
 
                 <!-- Login Form -->
@@ -48,20 +58,16 @@
                 <form class="signup-form hidden" id="signup-form" method="POST" action="{{ url_for('auth', action='signup') }}">
                     <h2>Sign Up</h2>
                         <div class="input-group">
-                            <input type="text" id="first name" name="first name" required>
-                            <label for="first name">First Name *</label>
-                        </div>
-                        <div class="input-group">
-                            <input type="text" id="last name" name="last name" required>
-                            <label for="last name">Last Name *</label>
+                            <input type="text" id="username" name="username" required>
+                            <label for="username">Create a username *</label>
                         </div>
                         <div class="input-group"> 
                             <input type="email" id="register email" name="register email" required>
                             <label for="register email">Register Email *</label>
                         </div>
                         <div class="input-group">
-                            <input type="password" id="password" name="password" required>
-                            <label for="password">Create Password *</label>
+                            <input type="password" id="Create password" name="Create password" required>
+                            <label for="Create password">Create Password *</label>
                         </div>
                     <button type="submit">Sign Up</button>
                 </form>
@@ -69,6 +75,18 @@
         </div>
     </div>
     <script>
+
+        document.addEventListener('DOMContentLoaded', function() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const action = urlParams.get('action');
+            
+            if (action === 'login') {
+                showLogin();
+            } else if (action === 'signup') {
+                showSignup();
+            }
+        });
+
         function showSignup() {
             document.getElementById('signup-form').classList.remove('hidden');
             document.getElementById('login-form').classList.add('hidden');
@@ -95,6 +113,11 @@
                 passwordField.type = 'password';
             }
         }
+
+
+        
+
+        
     </script>
 </body>
 </html>
