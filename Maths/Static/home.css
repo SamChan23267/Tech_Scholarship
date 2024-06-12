@@ -64,32 +64,3 @@
     text-decoration: none; /* Remove underline */
   }
   
-  @media (max-width: 768px) {
-    .navbar {
-      flex-direction: column;
-      align-items: flex-start;
-    }
-  
-    .nav-links {
-      flex-direction: column;
-      align-items: flex-start;
-      display: none;
-    }
-  
-    .nav-links.active {
-      display: flex;
-    }
-  
-    .nav-links a {
-      margin: 5px 0;
-    }
-  
-    .auth-buttons {
-      margin-top: 10px;
-    }
-  
-    .hamburger-menu {
-      display: block;
-    }
-  }
-  

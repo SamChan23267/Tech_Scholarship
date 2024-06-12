@@ -6,9 +6,10 @@
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='auth.css') }}"> 
     <title>SHC Maths Academy Authentication</title>
 </head>
-    {% include 'navbar.html' %}
+    {% include 'navbar_unauth.html' %}
 <body>
     <div class="auth-container">
+        
         <div class="left-section">
             <div class="login-welcome" id="login-welcome">
                 <h2>Welcome Back</h2>
@@ -20,15 +21,15 @@
             </div>
         </div>
         <div class="right-section">
-                <div class="form-container">
+            <div class="form-container">
                 <!-- Toggle Buttons -->
                 <div class="toggle-buttons">
-                    <button id="signup-btn" class="toggle-btn">Sign Up</button>
-                    <button id="login-btn" class="toggle-btn active">Log In</button>
+                    <button id="signup-btn" class="toggle-btn" onclick="showSignup()">Sign Up</button>
+                    <button id="login-btn" class="toggle-btn active" onclick="showLogin()">Log In</button>
                 </div>
 
                 <!-- Login Form -->
-                <form class="login-form" id="login-form">
+                <form class="login-form" id="login-form" method="POST" action="{{ url_for('auth', action='login') }}">
                   <h2>Login</h2>
                     <div class="input-group">
                         <input type="email" id="email" name="email" required>
@@ -37,25 +38,25 @@
                     <div class="input-group password-container">
                         <input type="password" id="password" name="password" required>
                         <label for="password">Password *</label>
-                        <span class="toggle-password" onclick="togglePasswordVisibility()">                        </span>
+                        <span class="toggle-password" onclick="togglePasswordVisibility()"></span>
                     </div>
                     <a href="#" class="forgot-password">Forgot password?</a>
                     <button type="submit">Log in</button>
                 </form>
 
                 <!-- Signup Form (hidden by default) -->
-                <form class="signup-form hidden" id="signup-form">
+                <form class="signup-form hidden" id="signup-form" method="POST" action="{{ url_for('auth', action='signup') }}">
                     <h2>Sign Up</h2>
                         <div class="input-group">
-                            <input type="first name" id="first name" name="first name" required>
+                            <input type="text" id="first name" name="first name" required>
                             <label for="first name">First Name *</label>
                         </div>
                         <div class="input-group">
-                            <input type="last name" id="last name" name="last name" required>
+                            <input type="text" id="last name" name="last name" required>
                             <label for="last name">Last Name *</label>
                         </div>
                         <div class="input-group"> 
-                            <input type="register email" id="register email" name="register email" required>
+                            <input type="email" id="register email" name="register email" required>
                             <label for="register email">Register Email *</label>
                         </div>
                         <div class="input-group">
@@ -63,84 +64,37 @@
                             <label for="password">Create Password *</label>
                         </div>
                     <button type="submit">Sign Up</button>
-                            
-                        
-                    <!-- Add your signup form fields here -->
                 </form>
-
-                <div class="signup">
-                    
-                </div>
             </div>
         </div>
     </div>
-
     <script>
-        document.addEventListener('DOMContentLoaded', (event) => {
-    // Function to show the correct form based on the action parameter
-    function showForm(action) {
-        const loginForm = document.getElementById('login-form');
-        const signupForm = document.getElementById('signup-form');
-        const loginWelcome = document.getElementById('login-welcome');
-        const signupWelcome = document.getElementById('signup-welcome');
-        const loginBtn = document.getElementById('login-btn');
-        const signupBtn = document.getElementById('signup-btn');
-
-        // Update the URL without reloading the page
-        const newUrl = action === 'signup' ? 'auth?action=signup' : 'auth?action=login';
-        history.pushState({ action: action }, '', newUrl);
-
-        if (action === 'signup') {
-            loginForm.classList.add('hidden');
-            signupForm.classList.remove('hidden');            
-            loginWelcome.classList.add('hidden');
-            signupWelcome.classList.remove('hidden');
-            loginBtn.classList.remove('active');
-            signupBtn.classList.add('active');
-
-
-        } else {
-            loginForm.classList.remove('hidden');
-            signupForm.classList.add('hidden');
-            loginWelcome.classList.remove('hidden');
-            signupWelcome.classList.add('hidden');
-            loginBtn.classList.add('active');
-            signupBtn.classList.remove('active');
+        function showSignup() {
+            document.getElementById('signup-form').classList.remove('hidden');
+            document.getElementById('login-form').classList.add('hidden');
+            document.getElementById('signup-welcome').classList.remove('hidden');
+            document.getElementById('login-welcome').classList.add('hidden');
+            document.getElementById('signup-btn').classList.add('active');
+            document.getElementById('login-btn').classList.remove('active');
         }
-    }
 
-    // Get the action parameter from the URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const action = urlParams.get('action') || 'login'; // Default to 'login'
+        function showLogin() {
+            document.getElementById('signup-form').classList.add('hidden');
+            document.getElementById('login-form').classList.remove('hidden');
+            document.getElementById('signup-welcome').classList.add('hidden');
+            document.getElementById('login-welcome').classList.remove('hidden');
+            document.getElementById('signup-btn').classList.remove('active');
+            document.getElementById('login-btn').classList.add('active');
+        }
 
-    // Show the correct form when the page loads
-    showForm(action);
-
-    // Event listeners for the navigation buttons
-    document.getElementById('login-btn').addEventListener('click', function() {
-        showForm('login');
-    });
-
-    document.getElementById('signup-btn').addEventListener('click', function() {
-        showForm('signup');
-    });
-
-    // Function to toggle password visibility
-    function togglePasswordVisibility() {
-        const passwordInput = document.getElementById('password');
-        const togglePasswordIcon = document.querySelector('.toggle-password i');
-        const isPasswordVisible = passwordInput.type === 'password';
-        passwordInput.type = isPasswordVisible ? 'text' : 'password';
-        passwordInput.classList.toggle('password-visible', isPasswordVisible);
-    }
-
-    // Attach the togglePasswordVisibility function to the password visibility toggle element
-    const togglePasswordElements = document.querySelectorAll('.toggle-password');
-    togglePasswordElements.forEach(toggleElement => {
-        toggleElement.addEventListener('click', togglePasswordVisibility);
-    });
-});
-
+        function togglePasswordVisibility() {
+            var passwordField = document.getElementById('password');
+            if (passwordField.type === 'password') {
+                passwordField.type = 'text';
+            } else {
+                passwordField.type = 'password';
+            }
+        }
     </script>
 </body>
 </html>
