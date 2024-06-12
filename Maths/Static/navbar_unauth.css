@@ -18,8 +18,15 @@
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   }
   
-  .logo {
-    text-decoration: none !important;
+  .logo a {
+    text-decoration: none;
+    font-size: 1.5em;
+    font-weight: bold;
+    color: #007BFF; /* Blue color scheme */
+  }
+
+  .logo a:visited {
+    text-decoration: none;
     font-size: 1.5em;
     font-weight: bold;
     color: #007BFF; /* Blue color scheme */
