@@ -10,12 +10,17 @@
     {% include 'navbar_unauth.html' %}
 <body>
 
-    {% for category, message in get_flashed_messages(with_categories=True) %}
+        <!-- Flash Messages -->
+        {% for category, message in get_flashed_messages(with_categories=True) %}
+            
+            <div class="flash-message {{ category }}">
+                {{ message }}
+                <button class="close-btn" onclick="closeFlashMessage(this)">×</button>
+            </div>
         
-        <div class="flash-message {{ category }} alert-dismissible">
-            {{ message }}
-     
-    {% endfor %}
+        {% endfor %}
+
+
 
     
     <div class="auth-container">
@@ -114,7 +119,10 @@
             }
         }
 
-
+        function closeFlashMessage(button) {
+        var flashMessage = button.parentElement;
+        flashMessage.style.display = 'none';
+        }
         
 
         

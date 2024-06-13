@@ -26,12 +26,12 @@ def auth():
             username = request.form.get('username')
             print(f"Signup form data: {email}, {password}, {username}")
             if email in users:
-                flash('Email already exists. Please log in.')
+                flash('Email already exists. Please log in.', 'alert')
                 return redirect(url_for('auth', action='login'))
             if username in users:
-                flash('Username already exist. Please try another username')
+                flash('Username already exist. Please try another username', 'alert')
             users[email] = {'password': password, 'username': username}
-            flash('Signup successful! Please log in.')
+            flash('Signup successful! Please log in.', 'successful')
             return redirect(url_for('auth', action='login'))
         else:
             email = request.form.get('email')
@@ -54,7 +54,7 @@ def auth():
 @app.route('/logout')
 def logout():
     session.pop('user', None)
-    flash('You have been locked out!')
+    flash('You have been locked out!', 'info')
     return redirect(url_for('home'))
     
 
