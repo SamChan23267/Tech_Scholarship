@@ -148,3 +148,8 @@ button[type="submit"] {
     text-decoration: none;
 }
 
+@media (max-width: 576px) {
+.left-section{ 
+    display:none;
+}
+}
