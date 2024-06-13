@@ -31,7 +31,8 @@ def auth():
             if username in users:
                 flash('Username already exist. Please try another username', 'alert')
             users[email] = {'password': password, 'username': username}
-            flash('Signup successful! Please log in.', 'successful')
+            flash('Signup successful! Please log in.', 'success')
+            print(users)
             return redirect(url_for('auth', action='login'))
         else:
             email = request.form.get('email')

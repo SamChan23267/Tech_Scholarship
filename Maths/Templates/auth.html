@@ -10,15 +10,7 @@
     {% include 'navbar_unauth.html' %}
 <body>
 
-        <!-- Flash Messages -->
-        {% for category, message in get_flashed_messages(with_categories=True) %}
-            
-            <div class="flash-message {{ category }}">
-                {{ message }}
-                <button class="close-btn" onclick="closeFlashMessage(this)">×</button>
-            </div>
-        
-        {% endfor %}
+        {% include 'flashmessage.html' %}
 
 
 
@@ -71,8 +63,8 @@
                             <label for="register email">Register Email *</label>
                         </div>
                         <div class="input-group">
-                            <input type="password" id="Create password" name="Create password" required>
-                            <label for="Create password">Create Password *</label>
+                            <input type="password" id="create password" name="create password" required>
+                            <label for="create password">Create Password *</label>
                         </div>
                     <button type="submit">Sign Up</button>
                 </form>

@@ -1,0 +1,12 @@
+<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='flashmessage.css') }}">
+
+<!-- Flash Messages -->
+
+{% for category, message in get_flashed_messages(with_categories=True) %}
+            
+    <div class="flash-message {{ category }}">
+        {{ message }}
+        <button class="close-btn" onclick="closeFlashMessage(this)">×</button>
+    </div>
+        
+{% endfor %}
