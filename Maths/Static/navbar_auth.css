@@ -9,7 +9,7 @@
     font-family: 'Arial', sans-serif; /* Choose a font that aligns with brand identity */
   }
   
-  .navbar_unauth {
+  .navbar_auth {
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -65,29 +65,49 @@
     border-radius: 4px;
     cursor: pointer;
   }
+
+  .search-form button:hover {
+    background-color: #0056b3; /* Darker blue for hover effect */
+    color: #fff;
+  }
   
-  .auth-buttons {
+  .settings-button {
     display: flex;
     align-items: center;
   }
   
-  .auth-buttons button {
+  .settings-button button {
     margin-left: 10px;
     padding: 5px 10px;
-    border: 1px solid #007BFF; /* Blue color scheme */
+    border: 1px solid #007BFF; 
     background-color: #fff;
-    color: #007BFF; /* Blue color scheme */
+    color: #007BFF; 
     border-radius: 4px;
     cursor: pointer;
   }
-  
-  .auth-buttons .sign-up {
-    background-color: #007BFF; /* Blue color scheme */
+
+  .settings-button button:hover {
+    background-color: #0056b3; /* Darker blue for hover effect */
     color: #fff;
   }
+
+  .logout-button {
+    display: flex;
+    align-items: center;
+  }
   
-  .auth-buttons button:hover, .search-form button:hover {
-    background-color: #0056b3; /* Darker blue for hover effect */
+  .logout-button button {
+    margin-left: 10px;
+    padding: 5px 10px;
+    border: 1px solid #ff0000;
+    background-color: #fff;
+    color: #ff0000; 
+    border-radius: 4px;
+    cursor: pointer;
+  }
+
+  .logout-button button:hover {
+    background-color: #b30000; /* Darker red for hover effect */
     color: #fff;
   }
   
@@ -131,24 +151,7 @@
   .dropdown:hover .dropbtn {
     background-color: #0056b3;
   }
-  
-  .intro {
-    padding: 20px;
-    background-color: #f9f9f9;
-    text-align: center;
-  }
-  
-  .intro h1 {
-    font-size: 2em;
-    color: #007BFF; /* Blue color scheme */
-  }
-  
-  .intro p {
-    font-size: 1.2em;
-    color: #333;
-    margin: 10px 0;
-  }
-  
+
   .topics {
     padding: 20px;
     background-color: #fff;
@@ -188,10 +191,10 @@
   }
   
   @media (max-width: 768px) {
-    .navbar_unauth {
+    .navbar_auth {
       flex-direction: column;
       align-items: flex-start;
-      margin: 20px, 0;
+
     }
   
     .nav-links {
@@ -206,10 +209,15 @@
   
     .nav-links a {
       margin: 10px 0;
-      color:#333
+      color:#333;
+    }
+
+    .settings-button {
+      margin-top: 20px;
+      color:#333;
     }
   
-    .auth-buttons {
+    .logout-button {
       margin-top: 20px;
       color:#333;
     }

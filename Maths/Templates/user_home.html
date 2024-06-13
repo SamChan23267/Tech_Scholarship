@@ -1,32 +1,24 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>SHC Maths Academy</title>
-<link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='home.css') }}">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='user_home.css') }}">
+    <title>User Home</title>
 </head>
 <body>
 
-    {% include 'navbar_unauth.html' %}
-
-    <section class="intro">
-        <h1>Welcome to SHC Maths Academy</h1>
-        <p>Providing quality education in NCEA Mathematics.</p>
-        <p>Access high-quality resources, interactive learning modules, and personalized learning journeys.</p>
-        <p>Join our supportive online community of students and teachers.</p>
-    </section>
+    {% include 'navbar_auth.html' %}
 
     <section class="topics">
         <h2>Topics</h2>
         <div class="level">
             <h3>Level 1</h3>
             <ul>
-                <li><a href="level1.html#number">Number</a></li>
-                <li><a href="level1.html#algebra">Algebra and Graphs</a></li>
-                <li><a href="level1.html#measurement">Measurement</a></li>
-                <li><a href="level1.html#geometry">Geometry and Trigonometry</a></li>
-                <li><a href="level1.html#statistics">Statistics and Probability</a></li>
+                <li><a href="level1.html#91026">91026 Apply numeric reasoning in solving problems</a></li>
+                <li><a href="level1.html#91027">91027 Apply algebraic procedures in solving problems</a></li>
+                <li><a href="level1.html#91028">91028 Investigate relationships between tables, equations, and graphs</a></li>
+                <li><a href="level1.html#91029">91029 Apply linear algebra in solving problems</a></li>
             </ul>
         </div>
         <div class="level">
@@ -54,10 +46,5 @@
             </ul>
         </div>
     </section>
-
-    <!-- Rest of your webpage content goes here -->
-
-    <script src='script.js'></script> <!-- If you have any JavaScript -->
-
 </body>
 </html>

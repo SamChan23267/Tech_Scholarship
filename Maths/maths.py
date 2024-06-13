@@ -51,6 +51,10 @@ def auth():
     return render_template('auth.html', action=action)
 
 
+@app.route('/user_home')
+def user_home():
+    return render_template('user_home.html')
+
 
 @app.route('/logout')
 def logout():

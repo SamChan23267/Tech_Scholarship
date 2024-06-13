@@ -1,9 +1,9 @@
 <head>
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='navbar_unauth.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='navbar_auth.css') }}">
 </head>
 <nav>
-<header class="navbar_unauth">
-    <div class="logo"><a href="home">SHC Maths Academy</a></div>
+<header class="navbar_auth">
+    <div class="logo"><a href="user_home">SHC Maths Academy</a></div>
     <nav class="nav-links">
         <div class="dropdown">
             <button class="dropbtn">Courses</button>
@@ -21,9 +21,14 @@
         <a href="#forum">Forum</a>
         <a href="#contact">Contact Us</a>
     </nav>
-    <div class="auth-buttons">
-        <button onclick="location.href='auth?action=login'" class='login'>Login</button>
-        <button onclick="location.href='auth?action=signup'" class='sign-up'>Sign up</button>
+    <div class="welcome-user">
+        <span>Welcome, {{ session['user'] }}</span>
+    </div>
+    <div class="settings-button">
+        <button onclick="location.href='#settings'" class='settings'>Settings</button>
+    </div>
+    <div class="logout-button">
+        <button onclick="location.href='logout'" class='logout'>Logout</button>
     </div> 
     <button class="hamburger-menu" onclick="toggleMenu()">☰</button>
     <script>
