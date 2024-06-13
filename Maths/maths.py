@@ -44,6 +44,7 @@ def auth():
             user = users.get(email)
             if user and user['password'] == password:
                 session['user'] = email
+                flash('Login successful!', 'success')
                 return redirect(url_for('user_home'))
             flash('Invalid credentials. Please try again.', 'alert')
             return redirect(url_for('auth', action='login'))
