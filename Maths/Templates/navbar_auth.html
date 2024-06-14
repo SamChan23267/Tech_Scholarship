@@ -28,14 +28,33 @@
         <button onclick="location.href='#settings'" class='settings'>Settings</button>
     </div>
     <div class="logout-button">
-        <button onclick="location.href='logout'" class='logout'>Logout</button>
+        <button onclick="showLogoutPopup()" class='logout'>Logout</button>
     </div> 
+    
+    <div id="logout-popup" class="logout-popup hidden">
+        <p>Are you sure you want to logout?</p>
+        <button class="confirm-button" onclick="confirmLogout()">Yes</button>
+        <button class="cancel-button" onclick="hideLogoutPopup()">No</button>
+    </div>
     <button class="hamburger-menu" onclick="toggleMenu()">☰</button>
     <script>
         function toggleMenu() {
             const navLinks = document.querySelector('.nav-links');
             navLinks.classList.toggle('active');
         }
+
+        function showLogoutPopup() {
+        document.getElementById('logout-popup').classList.remove('hidden');
+        }
+
+        function hideLogoutPopup() {
+        document.getElementById('logout-popup').classList.add('hidden');
+        }
+
+        function confirmLogout() {
+            location.href = 'logout';
+        }
+
     </script>
 </header>
 </nav>

@@ -96,8 +96,9 @@ def user_home():
 
 @app.route('/logout')
 def logout():
-    session.pop('user', None)
-    flash('You have been locked out!', 'info')
+    if 'user' in session:
+        session.pop('user', None)
+        flash('You have been locked out!', 'info')
     return redirect(url_for('home'))
     
 

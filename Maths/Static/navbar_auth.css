@@ -1,229 +1,282 @@
 /* Reset default browser styles */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-  }
-  
-  body {
-    font-family: 'Arial', sans-serif; /* Choose a font that aligns with brand identity */
-  }
-  
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  /* Choose a font that aligns with brand identity */
+}
+
+.navbar_auth {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #fff;
+  padding: 10px 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.logo a {
+  text-decoration: none;
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #007BFF;
+  /* Blue color scheme */
+}
+
+.logo a:visited {
+  text-decoration: none;
+  font-size: 1.5em;
+  font-weight: bold;
+  color: #007BFF;
+  /* Blue color scheme */
+}
+
+.nav-links {
+  display: flex;
+  align-items: center;
+}
+
+.nav-links a,
+.dropbtn {
+  margin: 0 15px;
+  text-decoration: none;
+  color: #007BFF;
+  /* Blue color scheme */
+  font-size: 1em;
+}
+
+.search-form {
+  display: flex;
+  align-items: center;
+  margin-left: 15px;
+}
+
+.search-form input {
+  padding: 5px;
+  border: 1px solid #007BFF;
+  /* Blue color scheme */
+  border-radius: 4px;
+  margin-right: 5px;
+}
+
+.search-form button {
+  padding: 5px 10px;
+  border: none;
+  background-color: #007BFF;
+  /* Blue color scheme */
+  color: #fff;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.search-form button:hover {
+  background-color: #0056b3;
+  /* Darker blue for hover effect */
+  color: #fff;
+}
+
+.settings-button {
+  display: flex;
+  align-items: center;
+}
+
+.settings-button button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  border: 1px solid #007BFF;
+  background-color: #fff;
+  color: #007BFF;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.settings-button button:hover {
+  background-color: #0056b3;
+  /* Darker blue for hover effect */
+  color: #fff;
+}
+
+.logout-button {
+  display: flex;
+  align-items: center;
+}
+
+.logout-button button {
+  margin-left: 10px;
+  padding: 5px 10px;
+  border: 1px solid #ff0000;
+  background-color: #fff;
+  color: #ff0000;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.logout-button button:hover {
+  background-color: #b30000;
+  /* Darker red for hover effect */
+  color: #fff;
+}
+
+.logout-popup {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  background-color: white;
+  border: 1px solid #ccc;
+  padding: 10px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+}
+
+.confirm-button, .cancel-button {
+  padding: 5px 10px;
+  margin: 5px;
+  border: none;
+  cursor: pointer;
+}
+
+.confirm-button {
+  border: 1px solid #ff0000;
+  background-color: #ff0000; /* Red */
+  color: white;
+}
+
+.cancel-button {
+  border: 1px solid #007BFF;
+  background-color: #fff;
+  color: #007BFF;
+}
+
+.confirm-button:hover, .cancel-button:hover {
+  opacity: 0.8;
+}
+
+.hidden {
+  display: none;
+}
+
+.hamburger-menu {
+  display: none;
+  font-size: 1.5em;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.dropdown {
+  position: relative;
+  display: inline-block;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #f9f9f9;
+  min-width: 160px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.dropdown-content a {
+  color: #333;
+  /* Grey-black font color */
+  padding: 12px 16px;
+  text-decoration: none;
+  /* Remove underline */
+  display: block;
+}
+
+.dropdown-content a:hover {
+  background-color: #f1f1f1;
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+
+.dropdown:hover .dropbtn {
+  background-color: #0056b3;
+}
+
+.topics {
+  padding: 20px;
+  background-color: #fff;
+}
+
+.topics h2 {
+  font-size: 1.8em;
+  color: #007BFF;
+  /* Blue color scheme */
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.level {
+  margin-bottom: 20px;
+}
+
+.level h3 {
+  font-size: 1.5em;
+  color: #007BFF;
+  /* Blue color scheme */
+  margin-bottom: 10px;
+}
+
+.level ul {
+  list-style-type: none;
+  padding-left: 20px;
+}
+
+.level ul li {
+  font-size: 1.2em;
+  color: #333;
+  margin-bottom: 5px;
+}
+
+.level ul li a {
+  color: #333;
+  /* Grey-black font color */
+  text-decoration: none;
+  /* Remove underline */
+}
+
+@media (max-width: 768px) {
   .navbar_auth {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background-color: #fff; 
-    padding: 10px 20px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  }
-  
-  .logo a {
-    text-decoration: none;
-    font-size: 1.5em;
-    font-weight: bold;
-    color: #007BFF; /* Blue color scheme */
+    flex-direction: column;
+    align-items: flex-start;
+
   }
 
-  .logo a:visited {
-    text-decoration: none;
-    font-size: 1.5em;
-    font-weight: bold;
-    color: #007BFF; /* Blue color scheme */
-  }
-  
   .nav-links {
-    display: flex;
-    align-items: center;
-  }
-  
-  .nav-links a, .dropbtn {
-    margin: 0 15px;
-    text-decoration: none;
-    color: #007BFF; /* Blue color scheme */
-    font-size: 1em;
-  }
-  
-  .search-form {
-    display: flex;
-    align-items: center;
-    margin-left: 15px;
-  }
-  
-  .search-form input {
-    padding: 5px;
-    border: 1px solid #007BFF; /* Blue color scheme */
-    border-radius: 4px;
-    margin-right: 5px;
-  }
-  
-  .search-form button {
-    padding: 5px 10px;
-    border: none;
-    background-color: #007BFF; /* Blue color scheme */
-    color: #fff;
-    border-radius: 4px;
-    cursor: pointer;
+    flex-direction: column;
+    align-items: flex-start;
+    display: none;
   }
 
-  .search-form button:hover {
-    background-color: #0056b3; /* Darker blue for hover effect */
-    color: #fff;
+  .nav-links.active {
+    display: flex;
   }
-  
+
+  .nav-links a {
+    margin: 10px 0;
+    color: #333;
+  }
+
   .settings-button {
-    display: flex;
-    align-items: center;
-  }
-  
-  .settings-button button {
-    margin-left: 10px;
-    padding: 5px 10px;
-    border: 1px solid #007BFF; 
-    background-color: #fff;
-    color: #007BFF; 
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  .settings-button button:hover {
-    background-color: #0056b3; /* Darker blue for hover effect */
-    color: #fff;
+    margin-top: 20px;
+    color: #333;
   }
 
   .logout-button {
-    display: flex;
-    align-items: center;
-  }
-  
-  .logout-button button {
-    margin-left: 10px;
-    padding: 5px 10px;
-    border: 1px solid #ff0000;
-    background-color: #fff;
-    color: #ff0000; 
-    border-radius: 4px;
-    cursor: pointer;
-  }
-
-  .logout-button button:hover {
-    background-color: #b30000; /* Darker red for hover effect */
-    color: #fff;
-  }
-  
-  .hamburger-menu {
-    display: none;
-    font-size: 1.5em;
-    background: none;
-    border: none;
-    cursor: pointer;
-  }
-  
-  .dropdown {
-    position: relative;
-    display: inline-block;
-  }
-  
-  .dropdown-content {
-    display: none;
-    position: absolute;
-    background-color: #f9f9f9;
-    min-width: 160px;
-    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-    z-index: 1;
-  }
-  
-  .dropdown-content a {
-    color: #333; /* Grey-black font color */
-    padding: 12px 16px;
-    text-decoration: none; /* Remove underline */
-    display: block;
-  }
-  
-  .dropdown-content a:hover {
-    background-color: #f1f1f1;
-  }
-  
-  .dropdown:hover .dropdown-content {
-    display: block;
-  }
-  
-  .dropdown:hover .dropbtn {
-    background-color: #0056b3;
-  }
-
-  .topics {
-    padding: 20px;
-    background-color: #fff;
-  }
-  
-  .topics h2 {
-    font-size: 1.8em;
-    color: #007BFF; /* Blue color scheme */
-    text-align: center;
-    margin-bottom: 20px;
-  }
-  
-  .level {
-    margin-bottom: 20px;
-  }
-  
-  .level h3 {
-    font-size: 1.5em;
-    color: #007BFF; /* Blue color scheme */
-    margin-bottom: 10px;
-  }
-  
-  .level ul {
-    list-style-type: none;
-    padding-left: 20px;
-  }
-  
-  .level ul li {
-    font-size: 1.2em;
+    margin-top: 20px;
     color: #333;
-    margin-bottom: 5px;
   }
-  
-  .level ul li a {
-    color: #333; /* Grey-black font color */
-    text-decoration: none; /* Remove underline */
-  }
-  
-  @media (max-width: 768px) {
-    .navbar_auth {
-      flex-direction: column;
-      align-items: flex-start;
 
-    }
-  
-    .nav-links {
-      flex-direction: column;
-      align-items: flex-start;
-      display: none;
-    }
-  
-    .nav-links.active {
-      display: flex;
-    }
-  
-    .nav-links a {
-      margin: 10px 0;
-      color:#333;
-    }
-
-    .settings-button {
-      margin-top: 20px;
-      color:#333;
-    }
-  
-    .logout-button {
-      margin-top: 20px;
-      color:#333;
-    }
-  
-    .hamburger-menu {
-      display: block;
-    }
+  .hamburger-menu {
+    display: block;
   }
-  
+}
