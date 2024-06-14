@@ -28,7 +28,12 @@ def auth():
             email = request.form.get('register email')
             password = request.form.get('create password')
             username = request.form.get('username')
-            print(f"Signup form data: {email}, {password}, {username}")
+
+
+            # Check if the username contains '@'
+            if '@' in username:
+                flash('Username should not contain @ symbol. Please choose another username.', 'alert')
+                return redirect(url_for('auth', action='signup'))
             
             conn = get_db_connection()
             cursor = conn.cursor()
@@ -73,7 +78,7 @@ def auth():
                 return redirect(url_for('auth', action='signup'))
             
             if check_password_hash(user['password'], password):
-                session['user'] = email
+                session['user'] = user['username']
                 flash('Login successful!', 'success')
                 conn.close()
                 return redirect(url_for('user_home'))

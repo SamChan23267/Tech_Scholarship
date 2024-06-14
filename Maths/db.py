@@ -55,8 +55,6 @@ def delete_user(email):
 
 
 
-
-
 # Commit the changes and close the connection
 conn.commit()
 conn.close()
