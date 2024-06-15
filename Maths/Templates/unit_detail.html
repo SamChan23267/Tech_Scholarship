@@ -11,15 +11,39 @@
     {% include 'navbar_auth.html' %}
     {% include 'flashmessage.html' %}
 
-    <header>
-        <h1>{{ unit_name }}</h1>
-    </header>
-
-    <main>
-        <div class="content">
-            <p>{{ unit_content }}</p>
+    <div class="container">
+        <div class="left-section">
+            <div class="course-navigation">
+                <div class="topic">   
+                    <a href="{{ url_for('topic_detail', topic_name=topic_name) }}">{{ topic_name }}</a>
+                </div> 
+                <div class="unit">
+                    <ul>
+                        {% for unit in units %}
+                        <li>
+                            <a href="{{ url_for('unit_detail', topic_name=topic_name, unit_name=unit.name) }}">{{ unit.display_name }}</a>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: {{ unit.progress }}%;"></div>
+                                    <span class="progress-text">{{ unit.progress }}%</span>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>    
         </div>
-    </main>
+
+        <div class="right-section">
+
+            <header>
+                <h1>{{ unit_name }}</h1>
+            </header>
+
+            <main>
+                <div class="content">
+                    <p>{{ unit_content }}</p>
+                </div>
+            </main>
 
 </body>
 </html>

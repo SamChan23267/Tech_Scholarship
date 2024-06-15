@@ -14,19 +14,23 @@
     <div class="container">
         <div class="left-section">
             <div class="course-navigation">
-                <h2>{{ topic_name }}</h2>
-                <ul>
-                    {% for unit in units %}
-                    <li>
-                        <a href="{{ url_for('unit_detail', topic_name=topic_name, unit_name=unit.name) }}">{{ unit.display_name }}</a>
-                        <div class="progress-bar">
-                            <div class="progress" style="width: {{ unit.progress }}%;"></div>
-                                <span class="progress-text">{{ unit.progress }}%</span>
-                        </div>
-                    </li>
-                    {% endfor %}
-                </ul>
-            </div>
+                <div class="topic">   
+                    <a href="{{ url_for('topic_detail', topic_name=topic_name) }}">{{ topic_name }}</a>
+                </div> 
+                <div class="unit">
+                    <ul>
+                        {% for unit in units %}
+                        <li>
+                            <a href="{{ url_for('unit_detail', topic_name=topic_name, unit_name=unit.name) }}">{{ unit.display_name }}</a>
+                            <div class="progress-bar">
+                                <div class="progress" style="width: {{ unit.progress }}%;"></div>
+                                    <span class="progress-text">{{ unit.progress }}%</span>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>    
         </div>
 
         <div class="right-section">

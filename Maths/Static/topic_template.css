@@ -28,8 +28,17 @@ header {
     padding-top: 20px;
 }
 
-.course-navigation h2 {
+.topic {
     margin-bottom: 20px;
+    padding-bottom: 20px;
+    border-bottom: 1px solid grey;
+}
+
+.topic a, .topic a:visited{
+    text-decoration: none;
+    color: black;
+    font-size: 1.5em;
+    font-weight: bold;
 }
 
 .course-navigation ul {
@@ -45,7 +54,7 @@ header {
     border-bottom: 1px solid grey;
 }
 
-.course-navigation a {
+.unit a {
     color: grey;
     text-decoration: none;
     flex: 1;

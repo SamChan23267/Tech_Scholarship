@@ -111,6 +111,10 @@ def topic_detail(topic_name):
         {'name': 'intermediate', 'display_name': 'Intermediate', 'progress': 50},
         {'name': 'advanced', 'display_name': 'Advanced', 'progress': 30}
     ]
+
+    # Ensure progress is a number between 0 and 100
+    for unit in units:
+        unit['progress'] = max(0, min(100, unit.get('progress', 0)))
     
     return render_template('topic_template.html', topic_name=topic_name, points=points, maximum_points=maximum_points, units=units)
 
@@ -118,7 +122,14 @@ def topic_detail(topic_name):
 def unit_detail(topic_name, unit_name):
     # Sample data for unit detail
     unit_content = f"This is the content for the {unit_name} unit in {topic_name}."
+
+    # Sample data for units (same as in topic_detail)
+    units = [
+        {'name': 'basics', 'display_name': 'Basics', 'progress': 80},
+        {'name': 'intermediate', 'display_name': 'Intermediate', 'progress': 50},
+        {'name': 'advanced', 'display_name': 'Advanced', 'progress': 30}
+    ]
     
-    return render_template('unit_detail.html', topic_name=topic_name, unit_name=unit_name, unit_content=unit_content)
+    return render_template('unit_detail.html', topic_name=topic_name, unit_name=unit_name, unit_content=unit_content, units=units)
 if __name__ == '__main__':
     app.run(debug=True)
