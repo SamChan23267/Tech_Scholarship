@@ -116,7 +116,7 @@ def topic_detail(topic_name):
     for unit in units:
         unit['progress'] = max(0, min(100, unit.get('progress', 0)))
     
-    return render_template('topic_template.html', topic_name=topic_name, points=points, maximum_points=maximum_points, units=units)
+    return render_template('content_template.html', topic_name=topic_name, points=points, maximum_points=maximum_points, units=units)
 
 @app.route('/topic/<string:topic_name>/<string:unit_name>')
 def unit_detail(topic_name, unit_name):
@@ -130,6 +130,6 @@ def unit_detail(topic_name, unit_name):
         {'name': 'advanced', 'display_name': 'Advanced', 'progress': 30}
     ]
     
-    return render_template('unit_detail.html', topic_name=topic_name, unit_name=unit_name, unit_content=unit_content, units=units)
+    return render_template('content_template.html', topic_name=topic_name, unit_name=unit_name, unit_content=unit_content, units=units)
 if __name__ == '__main__':
     app.run(debug=True)

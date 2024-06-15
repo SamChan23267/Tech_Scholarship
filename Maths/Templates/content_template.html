@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='unit_detail.css') }}">
-    <title>{{ unit_name }}</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='content_template.css') }}">
+    <title>{{ title }}</title>
 </head>
 <body>
 
@@ -34,16 +34,23 @@
         </div>
 
         <div class="right-section">
-
             <header>
-                <h1>{{ unit_name }}</h1>
+                <h1>{{ title }}</h1>
             </header>
 
             <main>
-                <div class="content">
-                    <p>{{ unit_content }}</p>
+                <div class="main-content">
+                    {% if is_topic %}
+                    <h2>Your Progress</h2>
+                    <p>{{ points }}/{{ maximum_points }} points</p>
+                    {% else %}
+                    <div class="content">
+                        <p>{{ unit_content }}</p>
+                    </div>
+                    {% endif %}
                 </div>
             </main>
+        </div>
+    </div>
 
 </body>
-</html>

@@ -87,6 +87,10 @@ header {
     line-height: 20px; /* Match the height of the progress bar */
 }
 
+.main-content {
+    text-align: center;
+}
+
 .content {
     padding: 20px;
     text-align: center;
