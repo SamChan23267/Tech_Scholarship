@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='unit_detail.css') }}">
+    <title>{{ unit_name }}</title>
+</head>
+<body>
+
+    {% include 'navbar_auth.html' %}
+    {% include 'flashmessage.html' %}
+
+    <header>
+        <h1>{{ unit_name }}</h1>
+    </header>
+
+    <main>
+        <div class="content">
+            <p>{{ unit_content }}</p>
+        </div>
+    </main>
+
+</body>
+</html>

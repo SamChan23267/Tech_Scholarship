@@ -101,6 +101,24 @@ def logout():
         flash('You have been locked out!', 'info')
     return redirect(url_for('home'))
     
+@app.route('/topic/<string:topic_name>')
+def topic_detail(topic_name):
+    # Sample data
+    points = 75
+    maximum_points = 100
+    units = [
+        {'name': 'basics', 'display_name': 'Basics', 'progress': 80},
+        {'name': 'intermediate', 'display_name': 'Intermediate', 'progress': 50},
+        {'name': 'advanced', 'display_name': 'Advanced', 'progress': 30}
+    ]
+    
+    return render_template('topic_template.html', topic_name=topic_name, points=points, maximum_points=maximum_points, units=units)
 
+@app.route('/topic/<string:topic_name>/<string:unit_name>')
+def unit_detail(topic_name, unit_name):
+    # Sample data for unit detail
+    unit_content = f"This is the content for the {unit_name} unit in {topic_name}."
+    
+    return render_template('unit_detail.html', topic_name=topic_name, unit_name=unit_name, unit_content=unit_content)
 if __name__ == '__main__':
     app.run(debug=True)
