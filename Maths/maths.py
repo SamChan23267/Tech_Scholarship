@@ -101,8 +101,8 @@ def logout():
         flash('You have been locked out!', 'info')
     return redirect(url_for('home'))
     
-@app.route('/topic/<string:topic_name>')
-def topic_detail(topic_name):
+@app.route('/topic/<string:level>/<string:topic_name>')
+def topic_detail(level, topic_name):
     # Sample data
     points = 75
     maximum_points = 100
@@ -112,24 +112,31 @@ def topic_detail(topic_name):
         {'name': 'advanced', 'display_name': 'Advanced', 'progress': 30}
     ]
 
+    title = f"{level} {topic_name}"
+
     # Ensure progress is a number between 0 and 100
     for unit in units:
         unit['progress'] = max(0, min(100, unit.get('progress', 0)))
+
     
-    return render_template('content_template.html', topic_name=topic_name, points=points, maximum_points=maximum_points, units=units)
+    
+    return render_template('content_template.html', level=level, topic_name=topic_name, points=points, maximum_points=maximum_points, units=units, title=title)
 
-@app.route('/topic/<string:topic_name>/<string:unit_name>')
-def unit_detail(topic_name, unit_name):
+@app.route('/topic/<string:level>/<string:topic_name>/<string:unit_name>')
+def unit_detail(level, topic_name, unit_name):
     # Sample data for unit detail
-    unit_content = f"This is the content for the {unit_name} unit in {topic_name}."
-
+    unit_content = f"This is the content for the {unit_name} unit in {level} {topic_name}."
+    
     # Sample data for units (same as in topic_detail)
     units = [
         {'name': 'basics', 'display_name': 'Basics', 'progress': 80},
         {'name': 'intermediate', 'display_name': 'Intermediate', 'progress': 50},
         {'name': 'advanced', 'display_name': 'Advanced', 'progress': 30}
     ]
+    title = f"{level} {topic_name} - {unit_name}"
     
-    return render_template('content_template.html', topic_name=topic_name, unit_name=unit_name, unit_content=unit_content, units=units)
+    return render_template('content_template.html', level=level, topic_name=topic_name, unit_name=unit_name, unit_content=unit_content, units=units, title=title)
+    
+    
 if __name__ == '__main__':
     app.run(debug=True)

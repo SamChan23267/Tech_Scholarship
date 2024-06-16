@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='content_template.css') }}">
-    <title>{{ title }}</title>
+    <title> {{title }}</title>
 </head>
 <body>
 
@@ -15,13 +15,13 @@
         <div class="left-section">
             <div class="course-navigation">
                 <div class="topic">   
-                    <a href="{{ url_for('topic_detail', topic_name=topic_name) }}">{{ topic_name }}</a>
+                    <a href="{{ url_for('topic_detail', level=level, topic_name=topic_name) }}">{{ topic_name }}</a>
                 </div> 
                 <div class="unit">
                     <ul>
                         {% for unit in units %}
                         <li>
-                            <a href="{{ url_for('unit_detail', topic_name=topic_name, unit_name=unit.name) }}">{{ unit.display_name }}</a>
+                            <a href="{{ url_for('unit_detail', level=level, topic_name=topic_name, unit_name=unit.name) }}">{{ unit.display_name }}</a>
                             <div class="progress-bar">
                                 <div class="progress" style="width: {{ unit.progress }}%;"></div>
                                     <span class="progress-text">{{ unit.progress }}%</span>
