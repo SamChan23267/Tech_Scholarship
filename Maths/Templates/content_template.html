@@ -14,18 +14,20 @@
     <div class="container">
         <div class="left-section">
             <div class="course-navigation">
-                <div class="topic">   
+                <div class="topic-section">   
                     <a href="{{ url_for('topic_detail', level=level, topic_name=topic_name) }}">{{ topic_name }}</a>
                 </div> 
-                <div class="unit">
+                <div class="unit-section">
                     <ul>
                         {% for unit in units %}
                         <li>
-                            <a href="{{ url_for('unit_detail', level=level, topic_name=topic_name, unit_name=unit.name) }}">{{ unit.display_name }}</a>
-                            <div class="progress-bar">
-                                <div class="progress" style="width: {{ unit.progress }}%;"></div>
+                            <a href="{{ url_for('unit_detail', level=level, topic_name=topic_name, unit_name=unit.name) }}" class="unit-link">
+                                <span>{{ unit.display_name }}</span>
+                                <div class="progress-bar">
+                                    <div class="progress" style="width: {{ unit.progress }}%;"></div>
                                     <span class="progress-text">{{ unit.progress }}%</span>
-                            </div>
+                                </div>
+                            </a>
                         </li>
                         {% endfor %}
                     </ul>
@@ -52,5 +54,38 @@
             </main>
         </div>
     </div>
-
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the current URL path
+            const currentPath = window.location.pathname;
+    
+            // Function to set the active class based on the current URL
+            function setActiveClass() {
+                // Remove active class from all topic and unit boxes
+                document.querySelectorAll('.topic-section a, .unit-section li a').forEach(function(element) {
+                    element.classList.remove('active');
+                });
+    
+                // Check for topic detail URL
+                document.querySelectorAll('.topic-section a').forEach(function(element) {
+                    const href = element.getAttribute('href');
+                    if (currentPath === href) {
+                        element.classList.add('active');
+                    }
+                });
+    
+                // Check for unit detail URL
+                document.querySelectorAll('.unit-section li a').forEach(function(element) {
+                    const href = element.getAttribute('href');
+                    if (currentPath === href) {
+                        element.classList.add('active');
+                    }
+                });
+            }
+    
+            // Set the active class when the page loads
+            setActiveClass();
+        });
+    </script>
 </body>
+</html>
