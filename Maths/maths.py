@@ -5,12 +5,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__, template_folder='templates')
 app.secret_key = 'your_secret_key'
 
+# Function to get a connection to the users.db database
 def get_users_db_connection():
     conn = sqlite3.connect('users.db')
     conn.row_factory = sqlite3.Row
     return conn
 
-
+# Fuction to get a connection to the topics.db databse
 def get_topics_db_connection():
     conn = sqlite3.connect('topics.db')
     conn.row_factory = sqlite3.Row
@@ -41,6 +42,7 @@ def auth():
             conn = get_users_db_connection()
             cursor = conn.cursor()
             
+            # check if the email already exists
             cursor.execute('SELECT * FROM users WHERE email = ?', (email,))
             existing_user = cursor.fetchone()
 
@@ -49,6 +51,7 @@ def auth():
                 conn.close()
                 return redirect(url_for('auth', action='login'))
             
+            # check if the username already exists
             cursor.execute('SELECT * FROM users WHERE username = ?', (username,))
             existing_username = cursor.fetchone()
             
@@ -57,6 +60,7 @@ def auth():
                 conn.close()
                 return redirect(url_for('auth', action='signup'))
             
+            # Hash the password and insert the new user into the databse
             hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
             cursor.execute('INSERT INTO users (email, username, password) VALUES (?, ?, ?)',
                            (email, username, hashed_password))
@@ -72,6 +76,7 @@ def auth():
             conn = get_users_db_connection()
             cursor = conn.cursor()
             
+            # Check if the email exists
             cursor.execute('SELECT * FROM users WHERE email = ?', (email,))
             user = cursor.fetchone()
 
@@ -80,6 +85,7 @@ def auth():
                 conn.close()
                 return redirect(url_for('auth', action='signup'))
             
+            # Verify the password
             if check_password_hash(user['password'], password):
                 session['user'] = user['username']
                 flash('Login successful!', 'success')
@@ -109,6 +115,7 @@ def topic_detail(level, topic_name):
     conn = get_topics_db_connection()
     cursor = conn.cursor()
 
+    # Fetch the topic details
     cursor.execute('SELECT * FROM topics WHERE level = ? AND name = ?', (level, topic_name))
     topic = cursor.fetchone()
 
@@ -117,11 +124,11 @@ def topic_detail(level, topic_name):
         conn.close()
         return redirect(url_for('home'))
 
+    # Fetch the units associated with the topic
     cursor.execute('SELECT * FROM units WHERE topic_id = ?', (topic['id'],))
     units = cursor.fetchall()
 
-    #title = f"{level} {topic_name}"
-
+    # Convert sqlite3.Row objects to dictionaries
     units = [dict(unit) for unit in units]
 
     # Calculate total points and total maximum points
@@ -140,6 +147,7 @@ def unit_detail(level, topic_name, unit_name):
     conn = get_topics_db_connection()
     cursor = conn.cursor()
 
+    # Fetch the topic details
     cursor.execute('SELECT * FROM topics WHERE level = ? AND name = ?', (level, topic_name))
     topic = cursor.fetchone()
 
@@ -148,9 +156,11 @@ def unit_detail(level, topic_name, unit_name):
         conn.close()
         return redirect(url_for('home'))
 
+    # Fetch the units associated with the topic
     cursor.execute('SELECT * FROM units WHERE topic_id = ?', (topic['id'],))
     units = cursor.fetchall()
 
+    #Fetch the specific unit details
     cursor.execute('SELECT * FROM units WHERE topic_id = ? AND name = ?', (topic['id'], unit_name))
     unit = cursor.fetchone()
 
@@ -160,7 +170,6 @@ def unit_detail(level, topic_name, unit_name):
         return redirect(url_for('topic_detail', level=level, topic_name=topic_name))
 
     unit_content = f"This is the content for the {unit_name} unit in {level} {topic_name}."
-    #title = f"{level} {topic_name} - {unit_name}"
     title = f"{topic['display_name']} - {unit['display_name']}"
 
     # Convert sqlite3.Row objects to dictionaries
