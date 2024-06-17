@@ -5,13 +5,16 @@ from werkzeug.security import generate_password_hash, check_password_hash
 app = Flask(__name__, template_folder='templates')
 app.secret_key = 'your_secret_key'
 
-def get_db_connection():
+def get_users_db_connection():
     conn = sqlite3.connect('users.db')
     conn.row_factory = sqlite3.Row
     return conn
 
 
-
+def get_topics_db_connection():
+    conn = sqlite3.connect('topics.db')
+    conn.row_factory = sqlite3.Row
+    return conn
 
 
 
@@ -35,7 +38,7 @@ def auth():
                 flash('Username should not contain @ symbol. Please choose another username.', 'alert')
                 return redirect(url_for('auth', action='signup'))
             
-            conn = get_db_connection()
+            conn = get_users_db_connection()
             cursor = conn.cursor()
             
             cursor.execute('SELECT * FROM users WHERE email = ?', (email,))
@@ -66,7 +69,7 @@ def auth():
             email = request.form.get('email')
             password = request.form.get('password')
             
-            conn = get_db_connection()
+            conn = get_users_db_connection()
             cursor = conn.cursor()
             
             cursor.execute('SELECT * FROM users WHERE email = ?', (email,))
@@ -103,40 +106,67 @@ def logout():
     
 @app.route('/topic/<string:level>/<string:topic_name>')
 def topic_detail(level, topic_name):
-    # Sample data
-    points = 75
-    maximum_points = 100
-    units = [
-        {'name': 'basics', 'display_name': 'Basics', 'progress': 80},
-        {'name': 'intermediate', 'display_name': 'Intermediate', 'progress': 50},
-        {'name': 'advanced', 'display_name': 'Advanced', 'progress': 30}
-    ]
+    conn = get_topics_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT * FROM topics WHERE level = ? AND name = ?', (level, topic_name))
+    topic = cursor.fetchone()
+
+    if not topic:
+        flash('Topic not found.', 'alert')
+        conn.close()
+        return redirect(url_for('home'))
+
+    cursor.execute('SELECT * FROM units WHERE topic_id = ?', (topic['id'],))
+    units = cursor.fetchall()
 
     title = f"{level} {topic_name}"
 
+    units = [dict(unit) for unit in units]
+
     # Ensure progress is a number between 0 and 100
     for unit in units:
-        unit['progress'] = max(0, min(100, unit.get('progress', 0)))
+        unit['progress'] = max(0, min(100, unit['progress']))
 
-    
-    
-    return render_template('content_template.html', level=level, topic_name=topic_name, points=points, maximum_points=maximum_points, units=units, title=title)
+    conn.close()
+    return render_template('content_template.html', level=level, topic_name=topic_name, points=75, maximum_points=100, units=units, title=title)
 
 @app.route('/topic/<string:level>/<string:topic_name>/<string:unit_name>')
 def unit_detail(level, topic_name, unit_name):
-    # Sample data for unit detail
+    conn = get_topics_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT * FROM topics WHERE level = ? AND name = ?', (level, topic_name))
+    topic = cursor.fetchone()
+
+    if not topic:
+        flash('Topic not found.', 'alert')
+        conn.close()
+        return redirect(url_for('home'))
+
+    cursor.execute('SELECT * FROM units WHERE topic_id = ?', (topic['id'],))
+    units = cursor.fetchall()
+
+    cursor.execute('SELECT * FROM units WHERE topic_id = ? AND name = ?', (topic['id'], unit_name))
+    unit = cursor.fetchone()
+
+    if not unit:
+        flash('Unit not found.', 'alert')
+        conn.close()
+        return redirect(url_for('topic_detail', level=level, topic_name=topic_name))
+
     unit_content = f"This is the content for the {unit_name} unit in {level} {topic_name}."
-    
-    # Sample data for units (same as in topic_detail)
-    units = [
-        {'name': 'basics', 'display_name': 'Basics', 'progress': 80},
-        {'name': 'intermediate', 'display_name': 'Intermediate', 'progress': 50},
-        {'name': 'advanced', 'display_name': 'Advanced', 'progress': 30}
-    ]
     title = f"{level} {topic_name} - {unit_name}"
-    
-    return render_template('content_template.html', level=level, topic_name=topic_name, unit_name=unit_name, unit_content=unit_content, units=units, title=title)
-    
+
+    # Convert sqlite3.Row objects to dictionaries
+    units = [dict(unit) for unit in units]
+
+    # Ensure progress is a number between 0 and 100
+    for unit in units:
+        unit['progress'] = max(0, min(100, unit['progress']))
+
+    conn.close()
+    return render_template('content_template.html', level=level, topic_name=topic_name, unit_name=unit_name, unit_content=unit_content, units=units, title=title) 
     
 if __name__ == '__main__':
     app.run(debug=True)
