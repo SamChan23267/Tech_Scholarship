@@ -23,7 +23,8 @@ CREATE TABLE IF NOT EXISTS units (
     topic_id INTEGER NOT NULL,
     name TEXT NOT NULL,
     display_name TEXT NOT NULL,
-    progress INTEGER NOT NULL,
+    score INTEGER NOT NULL,
+    maximum_score INTEGER NOT NULL,
     FOREIGN KEY (topic_id) REFERENCES topics (id)
 )
 ''')
@@ -51,10 +52,10 @@ def insert_sample_data():
     cursor.execute('INSERT INTO topics (level, name, display_name) VALUES (?, ?, ?)', ('level1', 'statistics and probability', 'Level 1 Statistics and Proabality'))
 
     # Insert sample units
-    cursor.execute('INSERT INTO units (topic_id, name, display_name, progress) VALUES (?, ?, ?, ?)', (1, 'addition', 'Addition', 80))
-    cursor.execute('INSERT INTO units (topic_id, name, display_name, progress) VALUES (?, ?, ?, ?)', (1, 'subtraction', 'Subtraction', 60))
-    cursor.execute('INSERT INTO units (topic_id, name, display_name, progress) VALUES (?, ?, ?, ?)', (1, 'multiplication', 'Multiplication', 50))
-    cursor.execute('INSERT INTO units (topic_id, name, display_name, progress) VALUES (?, ?, ?, ?)', (1, 'division', 'Division', 30))
+    cursor.execute('INSERT INTO units (topic_id, name, display_name, score, maximum_score) VALUES (?, ?, ?, ?, ?)', (1, 'addition', 'Addition', 40, 50))
+    cursor.execute('INSERT INTO units (topic_id, name, display_name, score, maximum_score) VALUES (?, ?, ?, ?, ?)', (1, 'subtraction', 'Subtraction', 30, 40))
+    cursor.execute('INSERT INTO units (topic_id, name, display_name, score, maximum_score) VALUES (?, ?, ?, ?, ?)', (1, 'multiplication', 'Multiplication', 24, 50))
+    cursor.execute('INSERT INTO units (topic_id, name, display_name, score, maximum_score) VALUES (?, ?, ?, ?, ?)', (1, 'division', 'Division', 15, 24))
 
     conn.commit()
     conn.close()

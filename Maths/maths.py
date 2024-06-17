@@ -120,16 +120,20 @@ def topic_detail(level, topic_name):
     cursor.execute('SELECT * FROM units WHERE topic_id = ?', (topic['id'],))
     units = cursor.fetchall()
 
-    title = f"{level} {topic_name}"
+    #title = f"{level} {topic_name}"
 
     units = [dict(unit) for unit in units]
 
+    # Calculate total points and total maximum points
+    total_points = sum(unit['score'] for unit in units)
+    total_maximum_points = sum(unit['maximum_score'] for unit in units)
+
     # Ensure progress is a number between 0 and 100
     for unit in units:
-        unit['progress'] = max(0, min(100, unit['progress']))
+        unit['progress'] = (unit['score'] / unit['maximum_score']) * 100
 
     conn.close()
-    return render_template('content_template.html', level=level, topic_name=topic_name, points=75, maximum_points=100, units=units, title=title)
+    return render_template('content_template.html', level=level, topic_name=topic_name, total_points=total_points, total_maximum_points=total_maximum_points, units=units, display_name=topic['display_name'], is_topic=True) #title=title
 
 @app.route('/topic/<string:level>/<string:topic_name>/<string:unit_name>')
 def unit_detail(level, topic_name, unit_name):
@@ -156,17 +160,18 @@ def unit_detail(level, topic_name, unit_name):
         return redirect(url_for('topic_detail', level=level, topic_name=topic_name))
 
     unit_content = f"This is the content for the {unit_name} unit in {level} {topic_name}."
-    title = f"{level} {topic_name} - {unit_name}"
+    #title = f"{level} {topic_name} - {unit_name}"
+    title = f"{topic['display_name']} - {unit['display_name']}"
 
     # Convert sqlite3.Row objects to dictionaries
     units = [dict(unit) for unit in units]
 
     # Ensure progress is a number between 0 and 100
     for unit in units:
-        unit['progress'] = max(0, min(100, unit['progress']))
+        unit['progress'] = (unit['score'] / unit['maximum_score']) * 100
 
     conn.close()
-    return render_template('content_template.html', level=level, topic_name=topic_name, unit_name=unit_name, unit_content=unit_content, units=units, title=title) 
+    return render_template('content_template.html', level=level, topic_name=topic_name, unit_name=unit_name, unit_content=unit_content, units=units, display_name=topic['display_name'], title=title, is_topic=False)
     
 if __name__ == '__main__':
     app.run(debug=True)

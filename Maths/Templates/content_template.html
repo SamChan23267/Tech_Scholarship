@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='content_template.css') }}">
-    <title> {{title }}</title>
+    <title> {{ title }}</title>
 </head>
 <body>
 
@@ -15,7 +15,7 @@
         <div class="left-section">
             <div class="course-navigation">
                 <div class="topic-section">   
-                    <a href="{{ url_for('topic_detail', level=level, topic_name=topic_name) }}">{{ topic_name }}</a>
+                    <a href="{{ url_for('topic_detail', level=level, topic_name=topic_name) }}">{{ display_name }}</a>
                 </div> 
                 <div class="unit-section">
                     <ul>
@@ -36,16 +36,18 @@
         </div>
 
         <div class="right-section">
-            <header>
-                <h1>{{ title }}</h1>
-            </header>
-
             <main>
                 <div class="main-content">
                     {% if is_topic %}
+                    <header>
+                        <h1>{{ display_name }}</h1>
+                    </header>
                     <h2>Your Progress</h2>
-                    <p>{{ points }}/{{ maximum_points }} points</p>
+                    <p>{{ total_points }}/{{ total_maximum_points }} points</p>
                     {% else %}
+                    <header>
+                        <h1>{{ title }}</h1>
+                    </header>
                     <div class="content">
                         <p>{{ unit_content }}</p>
                     </div>
