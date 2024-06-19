@@ -7,6 +7,9 @@ import json
 import os
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
+import re
+username_pattern = re.compile(r'^[a-z0-9_-]{3,16}$')
+
 app = Flask(__name__, template_folder='templates')
 app.secret_key = 'your_secret_key'
 
@@ -17,10 +20,6 @@ GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
 GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
 
 client = WebApplicationClient(GOOGLE_CLIENT_ID)
-
-# Print the environment variables to verify they are set correctly
-print("GOOGLE_CLIENT_ID:", os.getenv("GOOGLE_CLIENT_ID"))
-print("GOOGLE_CLIENT_SECRET:", os.getenv("GOOGLE_CLIENT_SECRET"))
 
 # Function to get a connection to the users.db database
 def get_users_db_connection():
@@ -52,6 +51,10 @@ def auth():
             password = request.form.get('create password')
             username = request.form.get('username')
 
+            # Validate username using regex
+            if not username_pattern.match(username):
+                flash('Username must be 3-16 characters long and can only contain lowercase letters, numbers, underscores, and hyphens.', 'alert')
+                return redirect(url_for('auth', action='signup'))
 
             # Check if the username contains '@'
             if '@' in username:
@@ -79,7 +82,7 @@ def auth():
                 conn.close()
                 return redirect(url_for('auth', action='signup'))
             
-            # Hash the password and insert the new user into the databse
+            # Hash the password and insert the new user into the database
             hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
             cursor.execute('INSERT INTO users (email, username, password) VALUES (?, ?, ?)',
                            (email, username, hashed_password))
@@ -88,7 +91,7 @@ def auth():
             flash('Signup successful! Please log in.', 'success')
             return redirect(url_for('auth', action='login'))
 
-        else: #action == 'login
+        else: # action == 'login'
             email = request.form.get('email')
             password = request.form.get('password')
             
@@ -169,7 +172,7 @@ def callback():
 
     userinfo = userinfo_response.json()
     email = userinfo["email"]
-    username = userinfo["given_name"]
+    given_name = userinfo["given_name"]
 
     conn = get_users_db_connection()
     cursor = conn.cursor()
@@ -178,16 +181,53 @@ def callback():
     user = cursor.fetchone()
 
     if not user:
-        hashed_password = generate_password_hash("defaultpassword", method='pbkdf2:sha256')
-        cursor.execute('INSERT INTO users (email, username, password) VALUES (?, ?, ?)',
-                       (email, username, hashed_password))
-        conn.commit()
+        session['temp_email'] = email
+        session['temp_given_name'] = given_name
+        conn.close()
+        return redirect(url_for('create_username'))
 
-    session['user'] = username
+    session['user'] = user['username']
     flash('Login successful!', 'success')
     conn.close()
     return redirect(url_for('user_home'))
 
+
+@app.route('/create_username', methods=['GET', 'POST'])
+def create_username():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        
+        # Validate username using regex
+        if not username_pattern.match(username):
+            flash('Username must be 3-16 characters long and can only contain lowercase letters, numbers, underscores, and hyphens.', 'alert')
+            return redirect(url_for('create_username'))
+
+        conn = get_users_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute('SELECT * FROM users WHERE username = ?', (username,))
+        existing_username = cursor.fetchone()
+
+        if existing_username:
+            flash('Username already exists. Please try another username', 'alert')
+            conn.close()
+            return redirect(url_for('create_username'))
+
+        email = session.get('temp_email')
+        given_name = session.get('temp_given_name')
+        hashed_password = generate_password_hash("defaultpassword", method='pbkdf2:sha256')
+        cursor.execute('INSERT INTO users (email, username, password) VALUES (?, ?, ?)',
+                       (email, username, hashed_password))
+        conn.commit()
+        conn.close()
+
+        session.pop('temp_email', None)
+        session.pop('temp_given_name', None)
+        session['user'] = username
+        flash('Signup successful! Please log in.', 'success')
+        return redirect(url_for('user_home'))
+
+    return render_template('create_username.html')
 
 @app.route('/topic/<string:level>/<string:topic_name>')
 def topic_detail(level, topic_name):
