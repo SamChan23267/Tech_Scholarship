@@ -1,0 +1,69 @@
+.flash-message {
+    width: 100% !important;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f4;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 100%;
+}
+
+
+h2 {
+    color: #333;
+    font-size: 2em; /* Increase font size */
+    margin-bottom: 20px; /* Add space below the header */
+    text-align: center; /* Center align the header */
+}
+
+form {
+    background: #fff;
+    padding: 40px; /* Increase padding */
+    border-radius: 10px; /* Increase border radius */
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1); /* Increase shadow */
+    width: 400px; /* Increase form width */
+    display: flex;
+    flex-direction: column; /* Ensure elements are stacked vertically */
+    align-items: center; /* Center align elements */
+}
+
+.input-group {
+    margin-bottom: 25px; /* Increase margin between input groups */
+    width: 100%; /* Ensure input group takes full width */
+}
+
+.input-group input {
+    width: 95%;
+    padding: 15px; /* Increase padding */
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 1.2em; /* Increase font size */
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 10px; /* Increase space between label and input */
+    color: #666;
+    font-size: 1.2em; /* Increase font size */
+}
+
+button {
+    background: #007BFF;
+    color: #fff;
+    padding: 15px 30px; /* Increase padding */
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 1.2em; /* Increase font size */
+}
+
+button:hover {
+    background: #0056b3;
+}

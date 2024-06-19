@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='create_username.css') }}">
+    <title>Create Username</title>
+</head>
+
+<body>
+    {% include 'flashmessage.html' %}
+    <h2>Create Username</h2>
+    <form method="POST" action="{{ url_for('create_username') }}">
+        <div class="input-group">
+            <input type="text" id="username" name="username" required>
+            <label for="username">Create a username *</label>
+        </div>
+        <button type="submit">Submit</button>
+    </form>
+</body>
+</html>

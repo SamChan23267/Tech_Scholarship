@@ -1,9 +1,45 @@
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
+from oauthlib.oauth2 import WebApplicationClient
+import requests
+import json
+from functools import wraps
+import os
+os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
+
+import re
+username_pattern = re.compile(r'^[a-z0-9_-]{3,16}$')
 
 app = Flask(__name__, template_folder='templates')
 app.secret_key = 'your_secret_key'
+
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user' not in session:
+            flash('You need to be logged in to access this page.', 'alert')
+            return redirect(url_for('auth', action='login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def temp_session_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'temp_email' not in session or 'temp_given_name' not in session:
+            flash('You need to complete the registration process.', 'alert')
+            return redirect(url_for('login_google'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+
+# Google OAuth 2.0 setup
+GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
+GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET")
+GOOGLE_DISCOVERY_URL = "https://accounts.google.com/.well-known/openid-configuration"
+
+client = WebApplicationClient(GOOGLE_CLIENT_ID)
 
 # Function to get a connection to the users.db database
 def get_users_db_connection():
@@ -17,6 +53,8 @@ def get_topics_db_connection():
     conn.row_factory = sqlite3.Row
     return conn
 
+def get_google_provider_cfg():
+    return requests.get(GOOGLE_DISCOVERY_URL).json()
 
 
 @app.route('/')
@@ -33,6 +71,10 @@ def auth():
             password = request.form.get('create password')
             username = request.form.get('username')
 
+            # Validate username using regex
+            if not username_pattern.match(username):
+                flash('Username must be 3-16 characters long and can only contain lowercase letters, numbers, underscores, and hyphens.', 'alert')
+                return redirect(url_for('auth', action='signup'))
 
             # Check if the username contains '@'
             if '@' in username:
@@ -60,7 +102,7 @@ def auth():
                 conn.close()
                 return redirect(url_for('auth', action='signup'))
             
-            # Hash the password and insert the new user into the databse
+            # Hash the password and insert the new user into the database
             hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
             cursor.execute('INSERT INTO users (email, username, password) VALUES (?, ?, ?)',
                            (email, username, hashed_password))
@@ -69,7 +111,7 @@ def auth():
             flash('Signup successful! Please log in.', 'success')
             return redirect(url_for('auth', action='login'))
 
-        else: #action == 'login
+        else: # action == 'login'
             email = request.form.get('email')
             password = request.form.get('password')
             
@@ -99,17 +141,117 @@ def auth():
 
 
 @app.route('/user_home')
+@login_required
 def user_home():
     return render_template('user_home.html')
 
 
 @app.route('/logout')
+@login_required
 def logout():
     if 'user' in session:
         session.pop('user', None)
         flash('You have been locked out!', 'info')
     return redirect(url_for('home'))
     
+
+@app.route('/login/google')
+def login_google():
+    google_provider_cfg = get_google_provider_cfg()
+    authorization_endpoint = google_provider_cfg["authorization_endpoint"]
+
+    request_uri = client.prepare_request_uri(
+        authorization_endpoint,
+        redirect_uri=request.base_url + "/callback",
+        scope=["openid", "email", "profile"],
+    )
+    return redirect(request_uri)
+
+@app.route('/login/google/callback')
+def callback():
+    code = request.args.get("code")
+    google_provider_cfg = get_google_provider_cfg()
+    token_endpoint = google_provider_cfg["token_endpoint"]
+
+    token_url, headers, body = client.prepare_token_request(
+        token_endpoint,
+        authorization_response=request.url,
+        redirect_url=request.base_url,
+        code=code
+    )
+    token_response = requests.post(
+        token_url,
+        headers=headers,
+        data=body,
+        auth=(GOOGLE_CLIENT_ID, GOOGLE_CLIENT_SECRET),
+    )
+
+    client.parse_request_body_response(json.dumps(token_response.json()))
+
+    userinfo_endpoint = google_provider_cfg["userinfo_endpoint"]
+    uri, headers, body = client.add_token(userinfo_endpoint)
+    userinfo_response = requests.get(uri, headers=headers, data=body)
+
+    userinfo = userinfo_response.json()
+    email = userinfo["email"]
+    given_name = userinfo["given_name"]
+
+    conn = get_users_db_connection()
+    cursor = conn.cursor()
+
+    cursor.execute('SELECT * FROM users WHERE email = ?', (email,))
+    user = cursor.fetchone()
+
+    if not user:
+        session['temp_email'] = email
+        session['temp_given_name'] = given_name
+        conn.close()
+        return redirect(url_for('create_username'))
+
+    session['user'] = user['username']
+    flash('Login successful!', 'success')
+    conn.close()
+    return redirect(url_for('user_home'))
+
+
+@app.route('/create_username', methods=['GET', 'POST'])
+@temp_session_required
+def create_username():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        
+        # Validate username using regex
+        if not username_pattern.match(username):
+            flash('Username must be 3-16 characters long and can only contain lowercase letters, numbers, underscores, and hyphens.', 'alert')
+            return redirect(url_for('create_username'))
+
+        conn = get_users_db_connection()
+        cursor = conn.cursor()
+
+        cursor.execute('SELECT * FROM users WHERE username = ?', (username,))
+        existing_username = cursor.fetchone()
+
+        if existing_username:
+            flash('Username already exists. Please try another username', 'alert')
+            conn.close()
+            return redirect(url_for('create_username'))
+
+        email = session.get('temp_email')
+        given_name = session.get('temp_given_name')
+        hashed_password = generate_password_hash("defaultpassword", method='pbkdf2:sha256')
+        cursor.execute('INSERT INTO users (email, username, password) VALUES (?, ?, ?)',
+                       (email, username, hashed_password))
+        conn.commit()
+        conn.close()
+
+        session.pop('temp_email', None)
+        session.pop('temp_given_name', None)
+        session['user'] = username
+        flash('Signup successful!', 'success')
+        return redirect(url_for('user_home'))
+
+    return render_template('create_username.html')
+
 @app.route('/topic/<string:level>/<string:topic_name>')
 def topic_detail(level, topic_name):
     conn = get_topics_db_connection()
