@@ -49,6 +49,13 @@
     background-color: #0056b3;
 }
 
+.required-field-note {
+    text-align: left;
+    margin-left: 0;
+    margin-bottom: 25px; 
+    font-weight: normal; /* Unbold the text */
+}
+
 .input-group {
     position: relative;
     margin-bottom: 20px;
@@ -110,6 +117,27 @@
 
 .hidden {
     display: none;
+}
+
+.google-btn {
+    width: 95%;
+    display: block;
+    align-items: center;
+    padding: 10px 20px;
+    margin-bottom: 10px;
+    margin-left: 10px;
+    border: 1px solid #dadce0;
+    border-radius: 4px;
+    box-shadow: none;
+    background-color: #ffffff;
+    cursor: pointer;
+  }
+
+.google-btn img {
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    margin-right: 8px;
 }
 
 /* Additional styles for password visibility toggle */
