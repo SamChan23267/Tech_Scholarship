@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from oauthlib.oauth2 import WebApplicationClient
 import requests
 import json
+from functools import wraps
 import os
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
@@ -12,6 +13,25 @@ username_pattern = re.compile(r'^[a-z0-9_-]{3,16}$')
 
 app = Flask(__name__, template_folder='templates')
 app.secret_key = 'your_secret_key'
+
+
+def login_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'user' not in session:
+            flash('You need to be logged in to access this page.', 'alert')
+            return redirect(url_for('auth', action='login'))
+        return f(*args, **kwargs)
+    return decorated_function
+
+def temp_session_required(f):
+    @wraps(f)
+    def decorated_function(*args, **kwargs):
+        if 'temp_email' not in session or 'temp_given_name' not in session:
+            flash('You need to complete the registration process.', 'alert')
+            return redirect(url_for('login_google'))
+        return f(*args, **kwargs)
+    return decorated_function
 
 
 # Google OAuth 2.0 setup
@@ -121,11 +141,13 @@ def auth():
 
 
 @app.route('/user_home')
+@login_required
 def user_home():
     return render_template('user_home.html')
 
 
 @app.route('/logout')
+@login_required
 def logout():
     if 'user' in session:
         session.pop('user', None)
@@ -193,6 +215,7 @@ def callback():
 
 
 @app.route('/create_username', methods=['GET', 'POST'])
+@temp_session_required
 def create_username():
     if request.method == 'POST':
         username = request.form.get('username')
@@ -224,7 +247,7 @@ def create_username():
         session.pop('temp_email', None)
         session.pop('temp_given_name', None)
         session['user'] = username
-        flash('Signup successful! Please log in.', 'success')
+        flash('Signup successful!', 'success')
         return redirect(url_for('user_home'))
 
     return render_template('create_username.html')
