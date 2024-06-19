@@ -10,6 +10,7 @@ os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 import re
 username_pattern = re.compile(r'^[a-z0-9_-]{3,16}$')
+password_pattern = re.compile(r'^.{6,16}$')
 
 app = Flask(__name__, template_folder='templates')
 app.secret_key = 'your_secret_key'
@@ -76,10 +77,11 @@ def auth():
                 flash('Username must be 3-16 characters long and can only contain lowercase letters, numbers, underscores, and hyphens.', 'alert')
                 return redirect(url_for('auth', action='signup'))
 
-            # Check if the username contains '@'
-            if '@' in username:
-                flash('Username should not contain @ symbol. Please choose another username.', 'alert')
+            # Validate password using regex
+            if not password_pattern.match(password):
+                flash('Password must be 6-16 characters long.', 'alert')
                 return redirect(url_for('auth', action='signup'))
+
             
             conn = get_users_db_connection()
             cursor = conn.cursor()
