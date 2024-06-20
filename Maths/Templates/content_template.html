@@ -44,12 +44,19 @@
                     </header>
                     <h2>Your Progress</h2>
                     <p>{{ total_points }}/{{ total_maximum_points }} points</p>
+                    <div class="content"> {{ content }} </div>
                     {% else %}
                     <header>
                         <h1>{{ title }}</h1>
                     </header>
                     <div class="content">
                         <p>{{ unit_content }}</p>
+                        <h2>Sections</h2>
+                        <ul>
+                            {% for section in sections %}
+                                <li>{{ section.display_name }}: {{ section.content }}</li>
+                            {% endfor %}
+                        </ul>
                     </div>
                     {% endif %}
                 </div>
