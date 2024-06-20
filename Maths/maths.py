@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash
+from flask import Flask, render_template, request, redirect, url_for, session, flash, make_response
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 from oauthlib.oauth2 import WebApplicationClient
@@ -34,6 +34,11 @@ def temp_session_required(f):
         return f(*args, **kwargs)
     return decorated_function
 
+@app.after_request
+def add_header(response):
+    response.cache_control.no_store = True
+    return response
+
 
 # Google OAuth 2.0 setup
 GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID")
@@ -66,6 +71,11 @@ def home():
 @app.route('/auth', methods=['GET', 'POST'])
 def auth():
     action = request.args.get('action', 'login')  # Default action is 'login'
+
+    # Check if the user is already logged in
+    if 'user' in session and action == 'signup':
+        return redirect(url_for('user_home'))
+    
     if request.method == 'POST':
         if action == 'signup':
             email = request.form.get('register email')
