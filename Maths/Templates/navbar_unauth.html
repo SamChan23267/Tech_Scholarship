@@ -8,9 +8,34 @@
         <div class="dropdown">
             <button class="dropbtn">Courses</button>
             <div class="dropdown-content">
-                <a href="level1.html">Level 1</a>
-                <a href="level2.html">Level 2</a>
-                <a href="level3.html">Level 3</a>
+                <div class="level-1">
+                    Level 1
+                    <a href="{{ url_for('topic_detail', level='level1', topic_name='number') }}">Number</a>
+                    <a href="{{ url_for('topic_detail', level='level1', topic_name='algebra and graphs') }}">Algebra and Graphs</a>
+                    <a href="{{ url_for('topic_detail', level='level1', topic_name='measurement') }}">Measurement</a>
+                    <a href="{{ url_for('topic_detail', level='level1', topic_name='geometry and trignometry') }}">Geometry and Trigonometry</a>
+                    <a href="{{ url_for('topic_detail', level='level1', topic_name='statistics and probability') }}">Statistics and Probability</a>
+                </div>
+                <div class="level-2">
+                    Level 2
+                <a href="{{ url_for('topic_detail', level='level2', topic_name='91256') }}">91256 Apply co-ordinate geometry methods in solving problems</a></li>
+                <a href="{{ url_for('topic_detail', level='level2', topic_name='91257') }}">91257 Apply graphical methods in solving problems</a></li>
+                <a href="{{ url_for('topic_detail', level='level2', topic_name='91258') }}">91258 Apply sequences and series in solving problems</a></li>
+                <a href="{{ url_for('topic_detail', level='level2', topic_name='91259') }}">91259 Apply trigonometric relationships in solving problems</a>
+                <a href="{{ url_for('topic_detail', level='level2', topic_name='91260') }}">91260 Apply network methods in solving problems</a>
+                <a href="{{ url_for('topic_detail', level='level2', topic_name='91261') }}">91261 Apply algebra methods in solving problems</a>
+                <a href="{{ url_for('topic_detail', level='level2', topic_name='91262') }}">91262 Apply calculus methods in solving problems</a>
+                <a href="{{ url_for('topic_detail', level='level2', topic_name='91264') }}">91264 Use statistical methods to make an inference</a>
+                <a href="{{ url_for('topic_detail', level='level2', topic_name='91267') }}">91267 Apply probability methods in solving problems</a>
+                <a href="{{ url_for('topic_detail', level='level2', topic_name='91268') }}">91268 Investigate a situation involving elements of chance using a simulation</a>
+            </div>
+            <div class="level-3">
+                Level 3
+                <a href="{{ url_for('topic_detail', level='level3', topic_name='91575') }}">91575 Apply trigonometric methods in solving problems</a>
+                <a href="{{ url_for('topic_detail', level='level3', topic_name='91577') }}">91577 Apply algebraic methods in solving problems</a>
+                <a href="{{ url_for('topic_detail', level='level3', topic_name='91578') }}">91578 Apply differentiation methods in solving problems</a>
+                <a href="{{ url_for('topic_detail', level='level3', topic_name='91579') }}">91579 Apply integration methods in solving problems</a>
+            </div>
             </div>
         </div>
         <!-- Search form -->
