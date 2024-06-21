@@ -118,6 +118,60 @@ header {
     line-height: 20px; /* Match the height of the progress bar */
 }
 
+.unit-link {
+    width: 100%;
+}
+
+.units-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+.unit-box {
+    width: 100%;
+    border: 1px solid #ccc;
+    border-radius: 2px;
+    padding: 16px;
+    margin-bottom: 16px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.unit-section{
+    text-align: left;
+}
+
+.unit-box h3 {
+    margin-top: 0;
+    font-size: 1.5em;
+    color: #333;
+}
+
+.unit-box p {
+    font-size: 1em;
+    color: #666;
+}
+
+.unit-box h4 {
+    margin-top: 16px;
+    font-size: 1.2em;
+    color: #333;
+}
+
+.unit-box ul {
+    list-style-type: none;
+    padding-left: 0;
+}
+
+.unit-box ul li {
+    font-size: 1em;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+
 .main-content {
     text-align: center;
 }

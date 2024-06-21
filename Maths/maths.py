@@ -284,6 +284,10 @@ def topic_detail(level, topic_name):
 
     # Convert sqlite3.Row objects to dictionaries
     units = [dict(unit) for unit in units]
+    for unit in units:
+        cursor.execute('SELECT * FROM sections WHERE unit_id = ?', (unit['id'],))
+        sections = cursor.fetchall()
+        unit['sections'] = [dict(section) for section in sections]
 
     # Calculate total points and total maximum points
     total_points = sum(unit['score'] for unit in units)

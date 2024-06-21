@@ -39,25 +39,42 @@
             <main>
                 <div class="main-content">
                     {% if is_topic %}
-                    <header>
-                        <h1>{{ display_name }}</h1>
-                    </header>
-                    <h2>Your Progress</h2>
-                    <p>{{ total_points }}/{{ total_maximum_points }} points</p>
-                    <div class="content"> {{ content }} </div>
-                    {% else %}
-                    <header>
-                        <h1>{{ title }}</h1>
-                    </header>
-                    <div class="content">
-                        <p>{{ unit_content }}</p>
-                        <h2>Sections</h2>
-                        <ul>
-                            {% for section in sections %}
-                                <li>{{ section.display_name }}: {{ section.content }}</li>
+                        <header>
+                            <h1>{{ display_name }}</h1>
+                        </header>
+                        <h2>Your Progress</h2>
+                        <p>{{ total_points }}/{{ total_maximum_points }} points</p>
+                        <div class="content"> {{ content }} </div>
+                        <h2>Units</h2>
+                        <div class="units-container">
+                            {% for unit in units %}
+                            <a href="{{ url_for('unit_detail', level=level, topic_name=topic_name, unit_name=unit.name) }}" class="unit-link">
+                                <div class="unit-box">
+                                    <h3>{{ unit.display_name }}</h3>
+                                    <div class="unit-section">
+                                        <ul>
+                                            {% for section in unit.sections %}
+                                            <li>{{ section.display_name }}</li>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                            </a>
                             {% endfor %}
-                        </ul>
-                    </div>
+                        </div>
+                    {% else %}
+                        <header>
+                            <h1>{{ title }}</h1>
+                        </header>
+                        <div class="content">
+                            <p>{{ unit_content }}</p>
+                            <h2>Sections</h2>
+                            <ul>
+                                {% for section in sections %}
+                                    <li>{{ section.display_name }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
                     {% endif %}
                 </div>
             </main>
