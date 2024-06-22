@@ -85,7 +85,7 @@ header {
     border-bottom: 1px solid grey;
 }
 
-.unit-section a {
+.unit-section a, .sections-section a {
     color: grey;
     text-decoration: none;
     flex: 1;
@@ -139,7 +139,10 @@ header {
     text-decoration: underline;
 }
 
-
+.sections-section:hover {
+    text-decoration: underline;
+    text-decoration-color: grey;
+}
 
 .units-container {
     display: flex;
@@ -158,7 +161,7 @@ header {
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
-.unit-section{
+.unit-section, .sections-section{
     text-align: left;
 }
 

@@ -52,10 +52,14 @@
                                 <a href="{{ url_for('unit_detail', level=level, topic_name=topic_name, unit_name=unit.name) }}" class="unit-link">
                                     <h3>Unit {{ loop.index }}: {{ unit.display_name }}</h3>
                                 </a>
-                                <div class="unit-section">
+                                <div class="sections-section">
                                     <ul>
                                         {% for section in unit.sections %}
-                                        <li>{{ section.display_name }}</li>
+                                        <li>
+                                            <a href="{{ url_for('section_detail', level=level, topic_name=topic_name, unit_name=unit.name, section_name=section.name) }}">
+                                                {{ section.display_name }}
+                                            </a>
+                                        </li>
                                         {% endfor %}
                                     </ul>
                                 </div>

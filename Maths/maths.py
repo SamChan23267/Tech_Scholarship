@@ -346,5 +346,98 @@ def unit_detail(level, topic_name, unit_name):
     conn.close()
     return render_template('content_template.html', level=level, topic_name=topic_name, unit_name=unit_name, unit_content=unit_content, units=units, sections=sections, display_name=topic['display_name'], title=title, is_topic=False)
     
+
+@app.route('/topic/<string:level>/<string:topic_name>/<string:unit_name>/<string:section_name>')
+def section_detail(level, topic_name, unit_name, section_name):
+    conn = get_topics_db_connection()
+    cursor = conn.cursor()
+
+    # Fetch the topic details
+    cursor.execute('SELECT * FROM topics WHERE level = ? AND name = ?', (level, topic_name))
+    topic = cursor.fetchone()
+
+    if not topic:
+        flash('Topic not found.', 'alert')
+        conn.close()
+        return redirect(url_for('home'))
+
+    # Fetch the unit details
+    cursor.execute('SELECT * FROM units WHERE topic_id = ? AND name = ?', (topic['id'], unit_name))
+    unit = cursor.fetchone()
+
+    if not unit:
+        flash('Unit not found.', 'alert')
+        conn.close()
+        return redirect(url_for('topic_detail', level=level, topic_name=topic_name))
+
+    # Fetch the section details
+    cursor.execute('SELECT * FROM sections WHERE unit_id = ? AND name = ?', (unit['id'], section_name))
+    section = cursor.fetchone()
+
+    if not section:
+        flash('Section not found.', 'alert')
+        conn.close()
+        return redirect(url_for('unit_detail', level=level, topic_name=topic_name, unit_name=unit_name))
+
+    section_content = section['content']
+    title = f"{topic['display_name']} - {unit['display_name']} - {section['display_name']}"
+
+    # Fetch the sub-sections associated with the section
+    cursor.execute('SELECT * FROM sub_sections WHERE section_id = ?', (section['id'],))
+    sub_sections = cursor.fetchall()
+
+    # Convert sqlite3.Row objects to dictionaries
+    sub_sections = [dict(sub_section) for sub_section in sub_sections]
+
+    conn.close()
+    return render_template('section_template.html', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name, section_content=section_content, sub_sections=sub_sections, display_name=section['display_name'], title=title)
+
+@app.route('/topic/<string:level>/<string:topic_name>/<string:unit_name>/<string:section_name>/<string:sub_section_name>')
+def sub_section_detail(level, topic_name, unit_name, section_name, sub_section_name):
+    conn = get_topics_db_connection()
+    cursor = conn.cursor()
+
+    # Fetch the topic details
+    cursor.execute('SELECT * FROM topics WHERE level = ? AND name = ?', (level, topic_name))
+    topic = cursor.fetchone()
+
+    if not topic:
+        flash('Topic not found.', 'alert')
+        conn.close()
+        return redirect(url_for('home'))
+
+    # Fetch the unit details
+    cursor.execute('SELECT * FROM units WHERE topic_id = ? AND name = ?', (topic['id'], unit_name))
+    unit = cursor.fetchone()
+
+    if not unit:
+        flash('Unit not found.', 'alert')
+        conn.close()
+        return redirect(url_for('topic_detail', level=level, topic_name=topic_name))
+
+    # Fetch the section details
+    cursor.execute('SELECT * FROM sections WHERE unit_id = ? AND name = ?', (unit['id'], section_name))
+    section = cursor.fetchone()
+
+    if not section:
+        flash('Section not found.', 'alert')
+        conn.close()
+        return redirect(url_for('unit_detail', level=level, topic_name=topic_name, unit_name=unit_name))
+
+    # Fetch the sub-section details
+    cursor.execute('SELECT * FROM sub_sections WHERE section_id = ? AND name = ?', (section['id'], sub_section_name))
+    sub_section = cursor.fetchone()
+
+    if not sub_section:
+        flash('Sub-section not found.', 'alert')
+        conn.close()
+        return redirect(url_for('section_detail', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name))
+
+    sub_section_content = sub_section['content']
+    title = f"{topic['display_name']} - {unit['display_name']} - {section['display_name']} - {sub_section['display_name']}"
+
+    conn.close()
+    return render_template('sub_section_template.html', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name, sub_section_name=sub_section_name, sub_section_content=sub_section_content, display_name=sub_section['display_name'], title=title)
+
 if __name__ == '__main__':
     app.run(debug=True)
