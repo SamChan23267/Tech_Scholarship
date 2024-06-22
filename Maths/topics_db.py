@@ -43,6 +43,21 @@ CREATE TABLE IF NOT EXISTS sections (
 )
 ''')
 
+cursor.execute('''
+CREATE TABLE IF NOT EXISTS sub_sections (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    section_id INTEGER NOT NULL,
+    type TEXT NOT NULL,
+    name TEXT NOT NULL,
+    display_name TEXT NOT NULL,
+    score INTEGER NOT NULL,
+    maximum_score INTEGER NOT NULL,
+    content TEXT,
+    FOREIGN KEY (section_id) REFERENCES sections (id)
+)
+''')
+
+
 
 # Commit the changes and close the connection
 conn.commit()
@@ -146,6 +161,14 @@ def insert_section(unit_id, name, display_name, content=None):
     conn.commit()
     conn.close()
 
+def insert_sub_section(section_id, type, name, display_name, score, maximum_score, content=None):
+    conn = sqlite3.connect('topics.db')
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO sub_sections (section_id, type, name, display_name, score, maximum_score, content) VALUES (?, ?, ?, ?, ?, ?, ?)', 
+                   (section_id, type, name, display_name, score, maximum_score, content))
+    conn.commit()
+    conn.close()
+
 def insert_sample_data():
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -166,5 +189,6 @@ def insert_sample_data():
     conn.commit()
     conn.close()
 
+
 if __name__ == '__main__':
-    insert_section(1, "basic", "basic")
+    insert_sub_section(1, "practice", "addition_basic", "Addition Basic", 0, 10)

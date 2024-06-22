@@ -118,9 +118,28 @@ header {
     line-height: 20px; /* Match the height of the progress bar */
 }
 
-.unit-link {
-    width: 100%;
+.unit-box {
+    border: 1px solid #ddd;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
 }
+
+.unit-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+.unit-link h3 {
+    margin: 0;
+    color: #007bff;
+}
+
+.unit-link h3:hover {
+    text-decoration: underline;
+}
+
+
 
 .units-container {
     display: flex;
@@ -130,10 +149,10 @@ header {
 }
 
 .unit-box {
-    width: 100%;
+    width: 90%;
     border: 1px solid #ccc;
-    border-radius: 2px;
-    padding: 16px;
+    border-radius: 4px;
+    padding: 8px;
     margin-bottom: 16px;
     background-color: #f9f9f9;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -162,7 +181,7 @@ header {
 
 .unit-box ul {
     list-style-type: none;
-    padding-left: 0;
+    padding-left: 16px;
 }
 
 .unit-box ul li {

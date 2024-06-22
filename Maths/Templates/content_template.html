@@ -48,18 +48,18 @@
                         <h2>Units</h2>
                         <div class="units-container">
                             {% for unit in units %}
-                            <a href="{{ url_for('unit_detail', level=level, topic_name=topic_name, unit_name=unit.name) }}" class="unit-link">
-                                <div class="unit-box">
-                                    <h3>{{ unit.display_name }}</h3>
-                                    <div class="unit-section">
-                                        <ul>
-                                            {% for section in unit.sections %}
-                                            <li>{{ section.display_name }}</li>
-                                            {% endfor %}
-                                        </ul>
-                                    </div>
+                            <div class="unit-box">
+                                <a href="{{ url_for('unit_detail', level=level, topic_name=topic_name, unit_name=unit.name) }}" class="unit-link">
+                                    <h3>Unit {{ loop.index }}: {{ unit.display_name }}</h3>
+                                </a>
+                                <div class="unit-section">
+                                    <ul>
+                                        {% for section in unit.sections %}
+                                        <li>{{ section.display_name }}</li>
+                                        {% endfor %}
+                                    </ul>
                                 </div>
-                            </a>
+                            </div>
                             {% endfor %}
                         </div>
                     {% else %}
