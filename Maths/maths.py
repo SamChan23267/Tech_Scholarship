@@ -339,6 +339,12 @@ def unit_detail(level, topic_name, unit_name):
     units = [dict(unit) for unit in units]
     sections = [dict(section) for section in sections]
 
+    # Fetch the sub-sections associated with each section
+    for section in sections:
+        cursor.execute('SELECT * FROM sub_sections WHERE section_id = ?', (section['id'],))
+        sub_sections = cursor.fetchall()
+        section['sub_sections'] = [dict(sub_section) for sub_section in sub_sections]
+
     # Ensure progress is a number between 0 and 100
     for unit in units:
         unit['progress'] = (unit['score'] / unit['maximum_score']) * 100
