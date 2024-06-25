@@ -277,6 +277,10 @@ def topic_detail(level, topic_name):
         flash('Topic not found.', 'alert')
         conn.close()
         return redirect(url_for('home'))
+    
+    # Convert sqlite3.Row object to dictionary
+    topic = dict(topic)
+
 
     # Fetch the units associated with the topic
     cursor.execute('SELECT * FROM units WHERE topic_id = ?', (topic['id'],))
@@ -289,16 +293,36 @@ def topic_detail(level, topic_name):
         sections = cursor.fetchall()
         unit['sections'] = [dict(section) for section in sections]
 
+        for section in unit['sections']:
+            cursor.execute('SELECT * FROM sub_sections WHERE section_id = ?', (section['id'],))
+            sub_sections = cursor.fetchall()
+            section['sub_sections'] = [dict(sub_section) for sub_section in sub_sections]
+
     # Calculate total points and total maximum points
-    total_points = sum(unit['score'] for unit in units)
-    total_maximum_points = sum(unit['maximum_score'] for unit in units)
+    total_points = 0
+    total_maximum_points = 0
+
+    for unit in units:
+        unit_points = 0
+        unit_maximum_points = 0
+        for section in unit['sections']:
+            section_points = sum(sub_section['score'] for sub_section in section['sub_sections'])
+            section_maximum_points = sum(sub_section['maximum_score'] for sub_section in section['sub_sections'])
+            section['score'] = section_points
+            section['maximum_score'] = section_maximum_points
+            unit_points += section_points
+            unit_maximum_points += section_maximum_points
+        unit['score'] = unit_points
+        unit['maximum_score'] = unit_maximum_points
+        total_points += unit_points
+        total_maximum_points += unit_maximum_points
 
     # Ensure progress is a number between 0 and 100
     for unit in units:
-        unit['progress'] = (unit['score'] / unit['maximum_score']) * 100
+        unit['progress'] = (unit['score'] / unit['maximum_score']) * 100 if unit['maximum_score'] > 0 else 0
 
     conn.close()
-    return render_template('content_template.html', level=level, topic_name=topic_name, total_points=total_points, total_maximum_points=total_maximum_points, units=units, display_name=topic['display_name'], content=topic['content'], is_topic=True) #title=title
+    return render_template('content_template.html', level=level, topic_name=topic_name, total_points=total_points, total_maximum_points=total_maximum_points, units=units, display_name=topic.get('display_name', 'N/A'), content=topic.get('content', 'N/A'), is_topic=True) #title=title
 
 @app.route('/topic/<string:level>/<string:topic_name>/<string:unit_name>')
 def unit_detail(level, topic_name, unit_name):
@@ -313,44 +337,82 @@ def unit_detail(level, topic_name, unit_name):
         flash('Topic not found.', 'alert')
         conn.close()
         return redirect(url_for('home'))
+    
+    # Convert sqlite3.Row object to dictionary
+    topic = dict(topic)
 
     # Fetch the units associated with the topic
     cursor.execute('SELECT * FROM units WHERE topic_id = ?', (topic['id'],))
-    units = cursor.fetchall()
+    unit_dict = cursor.fetchall()
+
+    # Convert sqlite3.Row objects to dictionaries
+    unit_dict = [dict(unit) for unit in unit_dict]
 
     #Fetch the specific unit details
     cursor.execute('SELECT * FROM units WHERE topic_id = ? AND name = ?', (topic['id'], unit_name))
-    unit = cursor.fetchone()
+    unit_current = cursor.fetchone()
 
-    if not unit:
+    if not unit_current:
         flash('Unit not found.', 'alert')
         conn.close()
         return redirect(url_for('topic_detail', level=level, topic_name=topic_name))
 
-    unit_content = unit['content']
-    title = f"{topic['display_name']} - {unit['display_name']}"
+    # Convert sqlite3.Row object to dictionary
+    unit_current = dict(unit_current)
+
+    # unit_content = unit['content']
+    title = f"{topic['display_name']} - {unit_current['display_name']}"
 
 
-    # Fetch the sections associated with the unit
-    cursor.execute('SELECT * FROM sections WHERE unit_id = ?', (unit['id'],))
-    sections = cursor.fetchall()
+    # Fetch the sections associated with each unit
+    for unit in unit_dict:
+        cursor.execute('SELECT * FROM sections WHERE unit_id = ?', (unit['id'],))
+        sections = cursor.fetchall()
+        unit['sections'] = [dict(section) for section in sections]
 
-    # Convert sqlite3.Row objects to dictionaries
-    units = [dict(unit) for unit in units]
-    sections = [dict(section) for section in sections]
+        for section in unit['sections']:
+            cursor.execute('SELECT * FROM sub_sections WHERE section_id = ?', (section['id'],))
+            sub_sections = cursor.fetchall()
+            section['sub_sections'] = [dict(sub_section) for sub_section in sub_sections]
 
-    # Fetch the sub-sections associated with each section
-    for section in sections:
+    # Calculate unit score and maximum score
+    unit_points = 0
+    unit_maximum_points = 0
+    for unit in unit_dict:
+        unit_points = 0
+        unit_maximum_points = 0
+        for section in unit['sections']:
+            section_points = sum(sub_section['score'] for sub_section in section['sub_sections'])
+            section_maximum_points = sum(sub_section['maximum_score'] for sub_section in section['sub_sections'])
+            section['score'] = section_points
+            section['maximum_score'] = section_maximum_points
+            unit_points += section_points
+            unit_maximum_points += section_maximum_points
+        unit['score'] = unit_points
+        unit['maximum_score'] = unit_maximum_points
+
+
+    # Ensure progress is a number between 0 and 100
+    for unit in unit_dict:
+        unit['progress'] = (unit['score'] / unit['maximum_score']) * 100 if unit['maximum_score'] > 0 else 0
+
+
+    cursor.execute('SELECT * FROM sections WHERE unit_id = ?', (unit_current['id'],))
+    sections_current = cursor.fetchall()
+    unit_current['sections'] = [dict(section) for section in sections_current]
+
+    # Initialize section_current to an empty list
+    section_current = []
+
+    for section in unit_current['sections']:
         cursor.execute('SELECT * FROM sub_sections WHERE section_id = ?', (section['id'],))
         sub_sections = cursor.fetchall()
         section['sub_sections'] = [dict(sub_section) for sub_section in sub_sections]
-
-    # Ensure progress is a number between 0 and 100
-    for unit in units:
-        unit['progress'] = (unit['score'] / unit['maximum_score']) * 100
-
+        section_current.append(section)
+    print(section_current)
     conn.close()
-    return render_template('content_template.html', level=level, topic_name=topic_name, unit_name=unit_name, unit_content=unit_content, units=units, sections=sections, display_name=topic['display_name'], title=title, is_topic=False)
+    print(unit_current)
+    return render_template('content_template.html', level=level, topic_name=topic_name, unit_name=unit_name, unit_content=unit.get('content', 'N/A'), units=unit_dict, sections=sections, section_current=section_current, display_name=topic['display_name'], title=title, is_topic=False)
     
 
 @app.route('/topic/<string:level>/<string:topic_name>/<string:unit_name>/<string:section_name>')
@@ -395,6 +457,15 @@ def section_detail(level, topic_name, unit_name, section_name):
     # Convert sqlite3.Row objects to dictionaries
     sub_sections = [dict(sub_section) for sub_section in sub_sections]
 
+    # Calculate section score and maximum score
+    section_points = sum(sub_section['score'] for sub_section in sub_sections)
+    section_maximum_points = sum(sub_section['maximum_score'] for sub_section in sub_sections)
+    section['score'] = section_points
+    section['maximum_score'] = section_maximum_points
+
+    # Ensure progress is a number between 0 and 100
+    section['progress'] = (section['score'] / section['maximum_score']) * 100 if section['maximum_score'] > 0 else 0
+
     conn.close()
     return render_template('section_template.html', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name, section_content=section_content, sub_sections=sub_sections, display_name=section['display_name'], title=title)
 
@@ -430,6 +501,7 @@ def sub_section_detail(level, topic_name, unit_name, section_name, sub_section_n
         conn.close()
         return redirect(url_for('unit_detail', level=level, topic_name=topic_name, unit_name=unit_name))
 
+    
     # Fetch the sub-section details
     cursor.execute('SELECT * FROM sub_sections WHERE section_id = ? AND name = ?', (section['id'], sub_section_name))
     sub_section = cursor.fetchone()

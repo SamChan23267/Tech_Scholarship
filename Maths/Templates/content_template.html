@@ -60,7 +60,7 @@
                                     <ul>
                                         {% for section in unit.sections %}
                                         <li>
-                                            <a href="{{ url_for('section_detail', level=level, topic_name=topic_name, unit_name=unit.name, section_name=section.name) }}">
+                                            <a href="{{ url_for('section_detail', level=level, topic_name=topic_name, unit_name=unit.name, section_name=section.name) }}" class="unit-section-link">
                                                 {{ section.display_name }}
                                             </a>
                                         </li>
@@ -77,7 +77,7 @@
                         <div class="unit-content"> {{ unit_content }} </p>
                             <h2>Sections</h2>
                             <div class="sections-container">
-                                {% for section in sections %}
+                                {% for section in section_current %}
                                 <div class="section-box">
                                     <a href="{{ url_for('section_detail', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section.name) }}" class="section-link">
                                         <h3>{{ section.display_name }}</h3>
@@ -85,16 +85,18 @@
                                     <div class="sub-sections-section">
                                         <ul>
                                             {% for sub_section in section.sub_sections %}
-                                            <li>
-                                                {% if sub_section.type == 'video' %}
-                                                <i class="material-icons">play arrow</i>
-                                                {% elif sub_section.type == 'notes' %}
-                                                <i class="material-icons">description</i>
-                                                {% else %}
-                                                <i class="material-icons">quiz</i>
-                                                {% endif %}
-                                                {{ sub_section.display_name }}
-                                            </li>
+                                            <a href="{{ url_for('sub_section_detail', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section.name, sub_section_name=sub_section.name) }}" class="sub-section-link">  
+                                                <li>
+                                                    {% if sub_section.type == 'video' %}
+                                                    <i class="material-icons">play arrow</i>
+                                                    {% elif sub_section.type == 'notes' %}
+                                                    <i class="material-icons">description</i>
+                                                    {% else %}
+                                                    <i class="material-icons">quiz</i>
+                                                    {% endif %}
+                                                    {{ sub_section.display_name }}
+                                                </li>
+                                            </a>
                                             {% endfor %}
                                         </ul>
                                     </div>

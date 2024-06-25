@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS topics (
     level TEXT NOT NULL,
     name TEXT NOT NULL,
     display_name TEXT NOT NULL,
-    context TEXT
+    content TEXT
 )
 ''')
 
@@ -24,9 +24,7 @@ CREATE TABLE IF NOT EXISTS units (
     topic_id INTEGER NOT NULL,
     name TEXT NOT NULL,
     display_name TEXT NOT NULL,
-    score INTEGER NOT NULL,
-    maximum_score INTEGER NOT NULL,
-    context TEXT,
+    content TEXT,
     FOREIGN KEY (topic_id) REFERENCES topics (id)
 )
 ''')
@@ -56,6 +54,9 @@ CREATE TABLE IF NOT EXISTS sub_sections (
     FOREIGN KEY (section_id) REFERENCES sections (id)
 )
 ''')
+
+# Remove the maximum_score and score columns from the units table
+
 
 
 
@@ -181,14 +182,21 @@ def insert_sample_data():
     cursor.execute('INSERT INTO topics (level, name, display_name) VALUES (?, ?, ?)', ('level1', 'statistics and probability', 'Level 1 Statistics and Proabality'))
 
     # Insert sample units
-    cursor.execute('INSERT INTO units (topic_id, name, display_name, score, maximum_score) VALUES (?, ?, ?, ?, ?)', (1, 'addition', 'Addition', 40, 50))
-    cursor.execute('INSERT INTO units (topic_id, name, display_name, score, maximum_score) VALUES (?, ?, ?, ?, ?)', (1, 'subtraction', 'Subtraction', 30, 40))
-    cursor.execute('INSERT INTO units (topic_id, name, display_name, score, maximum_score) VALUES (?, ?, ?, ?, ?)', (1, 'multiplication', 'Multiplication', 24, 50))
-    cursor.execute('INSERT INTO units (topic_id, name, display_name, score, maximum_score) VALUES (?, ?, ?, ?, ?)', (1, 'division', 'Division', 15, 24))
+    cursor.execute('INSERT INTO units (topic_id, name, display_name) VALUES (?, ?, ?)', (1, 'addition', 'Addition'))
+    cursor.execute('INSERT INTO units (topic_id, name, display_name) VALUES (?, ?, ?)', (1, 'subtraction', 'Subtraction'))
+    cursor.execute('INSERT INTO units (topic_id, name, display_name) VALUES (?, ?, ?)', (1, 'multiplication', 'Multiplication'))
+    cursor.execute('INSERT INTO units (topic_id, name, display_name) VALUES (?, ?, ?)', (1, 'division', 'Division'))
 
     conn.commit()
     conn.close()
 
 
 if __name__ == '__main__':
-    insert_sub_section(1, "practice", "addition_basic", "Addition Basic", 0, 10)
+    conn.commit()
+    conn.close()    
+    
+    '''insert_sample_data()
+    insert_section(1, 'basic', 'addition basics', 'This section covers the basics of addition')
+    insert_section(1, 'advanced', 'addition advanced', 'This section covers advanced addition')
+    insert_sub_section(1, 'notes', 'addition theory 1', 'addition theory', 0, 0, 'This is a multiple choice question')
+    insert_sub_section(1, 'practice', 'algebra basics practice 1', 'algebra basics practice', 10, 20, 'This is a multiple choice question')'''

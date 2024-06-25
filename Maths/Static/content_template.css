@@ -125,13 +125,18 @@ header {
     color: #007bff;
 }
 
-.unit-link h3:hover, .section-link h3:hover{
+.unit-link h3:hover {
     text-decoration: underline;
 }
 
-.sections-section:hover {
+.unit-section-link:hover {
     text-decoration: underline;
     text-decoration-color: grey;
+}
+
+.section-link:hover {
+    text-decoration: underline;
+    text-decoration-color: balck;
 }
 
 .units-container, .sections-container {
@@ -185,6 +190,21 @@ header {
     font-size: 1em;
     color: #666;
     margin-bottom: 8px;
+}
+
+.sub-section-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    padding: 4px;
+    transition: background-color 0.3s;
+}
+
+.sub-section-link:hover {
+    text-decoration: underline;
+    text-decoration-color: grey;
 }
 
 
