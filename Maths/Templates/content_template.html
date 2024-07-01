@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='content_template.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <title> {{ title }}</title>
 </head>
 <body>
@@ -35,22 +36,74 @@
             </div>    
         </div>
 
+
+
+        
         <div class="right-section">
             <main>
                 <div class="main-content">
                     {% if is_topic %}
-                    <header>
-                        <h1>{{ display_name }}</h1>
-                    </header>
-                    <h2>Your Progress</h2>
-                    <p>{{ total_points }}/{{ total_maximum_points }} points</p>
-                    {% else %}
-                    <header>
-                        <h1>{{ title }}</h1>
-                    </header>
-                    <div class="content">
-                        <p>{{ unit_content }}</p>
-                    </div>
+                        <header>
+                            <h1>{{ display_name }}</h1>
+                        </header>
+                        <h2>Your Progress</h2>
+                        <p>{{ total_points }}/{{ total_maximum_points }} points</p>
+                        <div class="topic-content"> {{ content }} </div>
+                        <h2>Units</h2>
+                        <div class="units-container">
+                            {% for unit in units %}
+                            <div class="unit-box">
+                                <a href="{{ url_for('unit_detail', level=level, topic_name=topic_name, unit_name=unit.name) }}" class="unit-link">
+                                    <h3>Unit {{ loop.index }}: {{ unit.display_name }}</h3>
+                                </a>
+                                <div class="sections-section">
+                                    <ul>
+                                        {% for section in unit.sections %}
+                                        <li>
+                                            <a href="{{ url_for('section_detail', level=level, topic_name=topic_name, unit_name=unit.name, section_name=section.name) }}" class="unit-section-link">
+                                                {{ section.display_name }}
+                                            </a>
+                                        </li>
+                                        {% endfor %}
+                                    </ul>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %} <!--if not topic-->
+                        <header>
+                            <h1>{{ title }}</h1>
+                        </header>
+                        <div class="unit-content"> {{ unit_content }} </p>
+                            <h2>Sections</h2>
+                            <div class="sections-container">
+                                {% for section in section_current %}
+                                <div class="section-box">
+                                    <a href="{{ url_for('section_detail', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section.name) }}" class="section-link">
+                                        <h3>{{ section.display_name }}</h3>
+                                    </a>
+                                    <div class="sub-sections-section">
+                                        <ul>
+                                            {% for sub_section in section.sub_sections %}
+                                            <a href="{{ url_for('sub_section_detail', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section.name, sub_section_name=sub_section.name) }}" class="sub-section-link">  
+                                                <li>
+                                                    {% if sub_section.type == 'video' %}
+                                                    <i class="material-icons">play arrow</i>
+                                                    {% elif sub_section.type == 'notes' %}
+                                                    <i class="material-icons">description</i>
+                                                    {% else %}
+                                                    <i class="material-icons">quiz</i>
+                                                    {% endif %}
+                                                    {{ sub_section.display_name }}
+                                                </li>
+                                            </a>
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            </div>
+                        </div>
                     {% endif %}
                 </div>
             </main>

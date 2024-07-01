@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ title }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='section_template.css') }}">
+</head>
+<body>
+
+    {% include 'navbar_auth.html' %}
+    {% include 'flashmessage.html' %}
+
+    <div class="container">
+        <div class="left-section">
+            <div class="course-navigation">
+                <div class="section-section">   
+                    <a href="{{ url_for('section_detail', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name) }}">{{ display_name }}</a>
+                </div> 
+                <div class="sub-section-section">
+                    <ul>
+                        {% for sub_section in sub_sections %}
+                        <li>
+                            <a href="{{ url_for('sub_section_detail', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name, sub_section_name=sub_section.name) }}" class="sub-section-link">
+                                <span>{{ sub_section.display_name }}</span>
+                            </a>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                </div>
+            </div>    
+        </div>
+
+        <div class="right-section">
+            <main>
+                <h1>{{ section_content.title }}</h1>
+                <p>{{ section_content.content }}</p>
+                <!-- Add more content as needed -->
+            </main>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the current URL path
+            const currentPath = window.location.pathname;
+
+            // Function to set the active class based on the current URL
+            function setActiveClass() {
+                // Remove active class from all section and sub-section boxes
+                document.querySelectorAll('.section-section a, .sub-section li a').forEach(function(element) {
+                    element.classList.remove('active');
+                });
+
+                // Check for section detail URL
+                document.querySelectorAll('.section-section a').forEach(function(element) {
+                    const href = element.getAttribute('href');
+                    if (currentPath === href) {
+                        element.classList.add('active');
+                    }
+                });
+
+                // Check for sub-section detail URL
+                document.querySelectorAll('.sub-section li a').forEach(function(element) {
+                    const href = element.getAttribute('href');
+                    if (currentPath === href) {
+                        element.classList.add('active');
+                    }
+                });
+            }
+
+            // Set the active class when the page loads
+            setActiveClass();
+        });
+    </script>
+</body>
+</html>

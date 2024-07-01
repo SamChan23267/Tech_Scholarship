@@ -1,0 +1,85 @@
+body {
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+}
+
+.left-section {
+    width: 30%;
+}
+
+.right-section {
+    width: 70%;
+}
+
+.course-navigation {
+    border-top: 1px solid #ccc;
+    padding-top: 0px;
+}
+
+.section-section {
+    padding: 0px;
+    border-bottom: 1px solid grey;
+}
+
+.section-section a, .section-section a:visited{
+    text-decoration: none;
+    color: black;
+    font-size: 1.5em;
+    font-weight: bold;
+}
+
+/* Ensure the entire box is clickable */
+.section-section a {
+    display: block;
+    padding: 25px;
+    text-decoration: none;
+    color: inherit;
+}
+
+/* Hover effect for section and sub-section boxes */
+.section-section a:hover,
+.sub-section-section li:hover {
+    background-color: rgba(211, 211, 211, 0.5); /* Transparent light grey */
+}
+
+/* Active effect for section and sub-section boxes */
+.section-section a.active,
+.sub-section-section li a.active {
+    background-color: rgba(183, 226, 250, 0.7); /* Transparent light blue */
+    
+    /* Add a border to indicate active state */
+    border-left: 5px solid #007BFF; /* Blue color scheme */
+}
+
+.sub-section-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    padding: 20px;
+    transition: background-color 0.3s;
+}
+
+.course-navigation ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.course-navigation li {
+    display: flex;
+    align-items: center;
+    padding: 0px;
+    border-bottom: 1px solid grey;
+}
+
+.sub-section-section a {
+    color: grey;
+    text-decoration: none;
+    flex: 1;
+}

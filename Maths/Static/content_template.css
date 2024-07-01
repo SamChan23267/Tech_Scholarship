@@ -63,16 +63,6 @@ header {
     border-left: 5px solid #007BFF; /* Blue color scheme */
 }
 
-.unit-link {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    text-decoration: none;
-    color: inherit;
-    padding: 20px;
-    transition: background-color 0.3s;
-}
-
 .course-navigation ul {
     list-style-type: none;
     padding: 0;
@@ -85,7 +75,7 @@ header {
     border-bottom: 1px solid grey;
 }
 
-.unit-section a {
+.unit-section a, .sections-section a {
     color: grey;
     text-decoration: none;
     flex: 1;
@@ -118,11 +108,111 @@ header {
     line-height: 20px; /* Match the height of the progress bar */
 }
 
+.unit-link, .section-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+    transition: background-color 0.3s;
+    color: inherit;
+    text-align: left;
+    padding: 20px;
+
+}
+
+.unit-link h3, .section-link h3{
+    margin: 0;
+    color: #007bff;
+}
+
+.unit-link h3:hover {
+    text-decoration: underline;
+}
+
+.unit-section-link:hover {
+    text-decoration: underline;
+    text-decoration-color: grey;
+}
+
+.section-link:hover {
+    text-decoration: underline;
+    text-decoration-color: balck;
+}
+
+.units-container, .sections-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+}
+
+
+.unit-box, .section-box {
+    margin-bottom: 10px;
+    background-color: #f9f9f9;
+    width: 90%;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    padding: 8px;
+    margin-bottom: 16px;
+    background-color: #f9f9f9;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.unit-section, .sections-section, .sub-sections-section {
+    text-align: left;
+}
+
+.unit-box h3, .section-box h3 {
+    margin-top: 0;
+    font-size: 1.5em;
+    color: #333;
+}
+
+.unit-box p, .section-box p {
+    font-size: 1em;
+    color: #666;
+}
+
+.unit-box h4, .section-box h4 {
+    margin-top: 16px;
+    font-size: 1.2em;
+    color: #333;
+}
+
+.unit-box ul, .section-box ul {
+    list-style-type: none;
+    padding-left: 16px;
+    
+}
+
+.unit-box ul li, .section-box ul li {
+    font-size: 1em;
+    color: #666;
+    margin-bottom: 8px;
+}
+
+.sub-section-link {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+    padding: 4px;
+    transition: background-color 0.3s;
+}
+
+.sub-section-link:hover {
+    text-decoration: underline;
+    text-decoration-color: grey;
+}
+
+
 .main-content {
     text-align: center;
 }
 
-.content {
+.topic-content, .unit-content {
     padding: 20px;
     text-align: center;
 }
