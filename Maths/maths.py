@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, make_response
+from flask import Flask, render_template, request, redirect, url_for, session, flash, g
 import sqlite3
 from werkzeug.security import generate_password_hash, check_password_hash
 from oauthlib.oauth2 import WebApplicationClient
@@ -49,15 +49,27 @@ client = WebApplicationClient(GOOGLE_CLIENT_ID)
 
 # Function to get a connection to the users.db database
 def get_users_db_connection():
-    conn = sqlite3.connect('users.db')
-    conn.row_factory = sqlite3.Row
-    return conn
+    conn_users = getattr(g, 'conn_users', None)
+    if conn_users is None:
+        conn_users = g.conn_users = sqlite3.connect('users.db')
+        conn_users.row_factory = sqlite3.Row
+    return conn_users
 
 # Fuction to get a connection to the topics.db databse
 def get_topics_db_connection():
-    conn = sqlite3.connect('topics.db')
-    conn.row_factory = sqlite3.Row
-    return conn
+    conn_topics = getattr(g, 'conn_topics', None)
+    if conn_topics is None:
+        conn_topics = g.conn_topics = sqlite3.connect('topics.db')
+        conn_topics.row_factory = sqlite3.Row
+    return conn_topics
+
+@app.teardown_appcontext
+def close_conn(exception):
+    if 'conn_users' in g:
+        g.conn_users.close()
+    if 'conn_topics' in g:
+        g.conn_topics.close()
+
 
 def get_google_provider_cfg():
     return requests.get(GOOGLE_DISCOVERY_URL).json()
@@ -92,34 +104,33 @@ def auth():
                 flash('Password must be 6-16 characters long.', 'alert')
                 return redirect(url_for('auth', action='signup'))
 
-            
-            conn = get_users_db_connection()
-            cursor = conn.cursor()
+            conn_users = get_users_db_connection()
+            cursor_users = conn_users.cursor()
             
             # check if the email already exists
-            cursor.execute('SELECT * FROM users WHERE email = ?', (email,))
-            existing_user = cursor.fetchone()
+            cursor_users.execute('SELECT * FROM users WHERE email = ?', (email,))
+            existing_user = cursor_users.fetchone()
 
             if existing_user:
                 flash('Email already exists. Please log in.', 'alert')
-                conn.close()
+                conn_users.close()
                 return redirect(url_for('auth', action='login'))
             
             # check if the username already exists
-            cursor.execute('SELECT * FROM users WHERE username = ?', (username,))
-            existing_username = cursor.fetchone()
+            cursor_users.execute('SELECT * FROM users WHERE username = ?', (username,))
+            existing_username = cursor_users.fetchone()
             
             if existing_username:
                 flash('Username already exists. Please try another username', 'alert')
-                conn.close()
+                conn_users.close()
                 return redirect(url_for('auth', action='signup'))
             
             # Hash the password and insert the new user into the database
             hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
-            cursor.execute('INSERT INTO users (email, username, password) VALUES (?, ?, ?)',
+            cursor_users.execute('INSERT INTO users (email, username, password) VALUES (?, ?, ?)',
                            (email, username, hashed_password))
-            conn.commit()
-            conn.close()
+            conn_users.commit()
+            conn_users.close()
             flash('Signup successful! Please log in.', 'success')
             return redirect(url_for('auth', action='login'))
 
@@ -127,26 +138,25 @@ def auth():
             email = request.form.get('email')
             password = request.form.get('password')
             
-            conn = get_users_db_connection()
-            cursor = conn.cursor()
+            cursor_users = conn_users.cursor()
             
             # Check if the email exists
-            cursor.execute('SELECT * FROM users WHERE email = ?', (email,))
-            user = cursor.fetchone()
+            cursor_users.execute('SELECT * FROM users WHERE email = ?', (email,))
+            user = cursor_users.fetchone()
 
             if not user:
                 flash('Email not found. Please sign up.', 'alert')
-                conn.close()
+                conn_users.close()
                 return redirect(url_for('auth', action='signup'))
             
             # Verify the password
             if check_password_hash(user['password'], password):
                 session['user'] = user['username']
                 flash('Login successful!', 'success')
-                conn.close()
+                conn_users.close()
                 return redirect(url_for('user_home'))
             flash('Invalid credentials. Please try again.', 'alert')
-            conn.close()
+            conn_users.close()
             return redirect(url_for('auth', action='login'))
         
     return render_template('auth.html', action=action)
@@ -208,21 +218,21 @@ def callback():
     email = userinfo["email"]
     given_name = userinfo["given_name"]
 
-    conn = get_users_db_connection()
-    cursor = conn.cursor()
+    conn_users = get_users_db_connection()
+    cursor_users = conn_users.cursor()
 
-    cursor.execute('SELECT * FROM users WHERE email = ?', (email,))
-    user = cursor.fetchone()
+    cursor_users.execute('SELECT * FROM users WHERE email = ?', (email,))
+    user = cursor_users.fetchone()
 
     if not user:
         session['temp_email'] = email
         session['temp_given_name'] = given_name
-        conn.close()
+        conn_users.close()
         return redirect(url_for('create_username'))
 
     session['user'] = user['username']
     flash('Login successful!', 'success')
-    conn.close()
+    conn_users.close()
     return redirect(url_for('user_home'))
 
 
@@ -237,24 +247,24 @@ def create_username():
             flash('Username must be 3-16 characters long and can only contain lowercase letters, numbers, underscores, and hyphens.', 'alert')
             return redirect(url_for('create_username'))
 
-        conn = get_users_db_connection()
-        cursor = conn.cursor()
+        conn_users = get_users_db_connection()
+        cursor_users = conn_users.cursor()
 
-        cursor.execute('SELECT * FROM users WHERE username = ?', (username,))
-        existing_username = cursor.fetchone()
+        cursor_users.execute('SELECT * FROM users WHERE username = ?', (username,))
+        existing_username = cursor_users.fetchone()
 
         if existing_username:
             flash('Username already exists. Please try another username', 'alert')
-            conn.close()
+            conn_users.close()
             return redirect(url_for('create_username'))
 
         email = session.get('temp_email')
         given_name = session.get('temp_given_name')
         hashed_password = generate_password_hash("defaultpassword", method='pbkdf2:sha256')
-        cursor.execute('INSERT INTO users (email, username, password) VALUES (?, ?, ?)',
+        cursor_users.execute('INSERT INTO users (email, username, password) VALUES (?, ?, ?)',
                        (email, username, hashed_password))
-        conn.commit()
-        conn.close()
+        conn_users.commit()
+        conn_users.close()
 
         session.pop('temp_email', None)
         session.pop('temp_given_name', None)
@@ -266,16 +276,16 @@ def create_username():
 
 @app.route('/topic/<string:level>/<string:topic_name>')
 def topic_detail(level, topic_name):
-    conn = get_topics_db_connection()
-    cursor = conn.cursor()
+    conn_topics = get_topics_db_connection()
+    cursor_topics = conn_topics.cursor()
 
     # Fetch the topic details
-    cursor.execute('SELECT * FROM topics WHERE level = ? AND name = ?', (level, topic_name))
-    topic = cursor.fetchone()
+    cursor_topics.execute('SELECT * FROM topics WHERE level = ? AND name = ?', (level, topic_name))
+    topic = cursor_topics.fetchone()
 
     if not topic:
         flash('Topic not found.', 'alert')
-        conn.close()
+        conn_topics.close()
         return redirect(url_for('home'))
     
     # Convert sqlite3.Row object to dictionary
@@ -283,19 +293,19 @@ def topic_detail(level, topic_name):
 
 
     # Fetch the units associated with the topic
-    cursor.execute('SELECT * FROM units WHERE topic_id = ?', (topic['id'],))
-    units = cursor.fetchall()
+    cursor_topics.execute('SELECT * FROM units WHERE topic_id = ?', (topic['id'],))
+    units = cursor_topics.fetchall()
 
     # Convert sqlite3.Row objects to dictionaries
     units = [dict(unit) for unit in units]
     for unit in units:
-        cursor.execute('SELECT * FROM sections WHERE unit_id = ?', (unit['id'],))
-        sections = cursor.fetchall()
+        cursor_topics.execute('SELECT * FROM sections WHERE unit_id = ?', (unit['id'],))
+        sections = cursor_topics.fetchall()
         unit['sections'] = [dict(section) for section in sections]
 
         for section in unit['sections']:
-            cursor.execute('SELECT * FROM sub_sections WHERE section_id = ?', (section['id'],))
-            sub_sections = cursor.fetchall()
+            cursor_topics.execute('SELECT * FROM sub_sections WHERE section_id = ?', (section['id'],))
+            sub_sections = cursor_topics.fetchall()
             section['sub_sections'] = [dict(sub_section) for sub_section in sub_sections]
 
     # Calculate total points and total maximum points
@@ -321,40 +331,40 @@ def topic_detail(level, topic_name):
     for unit in units:
         unit['progress'] = (unit['score'] / unit['maximum_score']) * 100 if unit['maximum_score'] > 0 else 0
 
-    conn.close()
+    conn_topics.close()
     return render_template('content_template.html', level=level, topic_name=topic_name, total_points=total_points, total_maximum_points=total_maximum_points, units=units, display_name=topic.get('display_name', 'N/A'), content=topic.get('content', 'N/A'), is_topic=True) #title=title
 
 @app.route('/topic/<string:level>/<string:topic_name>/<string:unit_name>')
 def unit_detail(level, topic_name, unit_name):
-    conn = get_topics_db_connection()
-    cursor = conn.cursor()
+    conn_topics = get_topics_db_connection()
+    cursor_topics = conn_topics.cursor()
 
     # Fetch the topic details
-    cursor.execute('SELECT * FROM topics WHERE level = ? AND name = ?', (level, topic_name))
-    topic = cursor.fetchone()
+    cursor_topics.execute('SELECT * FROM topics WHERE level = ? AND name = ?', (level, topic_name))
+    topic = cursor_topics.fetchone()
 
     if not topic:
         flash('Topic not found.', 'alert')
-        conn.close()
+        conn_topics.close()
         return redirect(url_for('home'))
     
     # Convert sqlite3.Row object to dictionary
     topic = dict(topic)
 
     # Fetch the units associated with the topic
-    cursor.execute('SELECT * FROM units WHERE topic_id = ?', (topic['id'],))
-    unit_dict = cursor.fetchall()
+    cursor_topics.execute('SELECT * FROM units WHERE topic_id = ?', (topic['id'],))
+    unit_dict = cursor_topics.fetchall()
 
     # Convert sqlite3.Row objects to dictionaries
     unit_dict = [dict(unit) for unit in unit_dict]
 
     #Fetch the specific unit details
-    cursor.execute('SELECT * FROM units WHERE topic_id = ? AND name = ?', (topic['id'], unit_name))
-    unit_current = cursor.fetchone()
+    cursor_topics.execute('SELECT * FROM units WHERE topic_id = ? AND name = ?', (topic['id'], unit_name))
+    unit_current = cursor_topics.fetchone()
 
     if not unit_current:
         flash('Unit not found.', 'alert')
-        conn.close()
+        conn_topics.close()
         return redirect(url_for('topic_detail', level=level, topic_name=topic_name))
 
     # Convert sqlite3.Row object to dictionary
@@ -366,13 +376,13 @@ def unit_detail(level, topic_name, unit_name):
 
     # Fetch the sections associated with each unit
     for unit in unit_dict:
-        cursor.execute('SELECT * FROM sections WHERE unit_id = ?', (unit['id'],))
-        sections = cursor.fetchall()
+        cursor_topics.execute('SELECT * FROM sections WHERE unit_id = ?', (unit['id'],))
+        sections = cursor_topics.fetchall()
         unit['sections'] = [dict(section) for section in sections]
 
         for section in unit['sections']:
-            cursor.execute('SELECT * FROM sub_sections WHERE section_id = ?', (section['id'],))
-            sub_sections = cursor.fetchall()
+            cursor_topics.execute('SELECT * FROM sub_sections WHERE section_id = ?', (section['id'],))
+            sub_sections = cursor_topics.fetchall()
             section['sub_sections'] = [dict(sub_section) for sub_section in sub_sections]
 
     # Calculate unit score and maximum score
@@ -397,62 +407,62 @@ def unit_detail(level, topic_name, unit_name):
         unit['progress'] = (unit['score'] / unit['maximum_score']) * 100 if unit['maximum_score'] > 0 else 0
 
 
-    cursor.execute('SELECT * FROM sections WHERE unit_id = ?', (unit_current['id'],))
-    sections_current = cursor.fetchall()
+    cursor_topics.execute('SELECT * FROM sections WHERE unit_id = ?', (unit_current['id'],))
+    sections_current = cursor_topics.fetchall()
     unit_current['sections'] = [dict(section) for section in sections_current]
 
     # Initialize section_current to an empty list
     section_current = []
 
     for section in unit_current['sections']:
-        cursor.execute('SELECT * FROM sub_sections WHERE section_id = ?', (section['id'],))
-        sub_sections = cursor.fetchall()
+        cursor_topics.execute('SELECT * FROM sub_sections WHERE section_id = ?', (section['id'],))
+        sub_sections = cursor_topics.fetchall()
         section['sub_sections'] = [dict(sub_section) for sub_section in sub_sections]
         section_current.append(section)
     print(section_current)
-    conn.close()
+    conn_topics.close()
     print(unit_current)
     return render_template('content_template.html', level=level, topic_name=topic_name, unit_name=unit_name, unit_content=unit.get('content', 'N/A'), units=unit_dict, sections=sections, section_current=section_current, display_name=topic['display_name'], title=title, is_topic=False)
     
 
 @app.route('/topic/<string:level>/<string:topic_name>/<string:unit_name>/<string:section_name>')
 def section_detail(level, topic_name, unit_name, section_name):
-    conn = get_topics_db_connection()
-    cursor = conn.cursor()
+    conn_topics = get_topics_db_connection()
+    cursor_topics = conn_topics.cursor()
 
     # Fetch the topic details
-    cursor.execute('SELECT * FROM topics WHERE level = ? AND name = ?', (level, topic_name))
-    topic = cursor.fetchone()
+    cursor_topics.execute('SELECT * FROM topics WHERE level = ? AND name = ?', (level, topic_name))
+    topic = cursor_topics.fetchone()
 
     if not topic:
         flash('Topic not found.', 'alert')
-        conn.close()
+        conn_topics.close()
         return redirect(url_for('home'))
 
     # Fetch the unit details
-    cursor.execute('SELECT * FROM units WHERE topic_id = ? AND name = ?', (topic['id'], unit_name))
-    unit = cursor.fetchone()
+    cursor_topics.execute('SELECT * FROM units WHERE topic_id = ? AND name = ?', (topic['id'], unit_name))
+    unit = cursor_topics.fetchone()
 
     if not unit:
         flash('Unit not found.', 'alert')
-        conn.close()
+        conn_topics.close()
         return redirect(url_for('topic_detail', level=level, topic_name=topic_name))
 
     # Fetch the section details
-    cursor.execute('SELECT * FROM sections WHERE unit_id = ? AND name = ?', (unit['id'], section_name))
-    section = cursor.fetchone()
+    cursor_topics.execute('SELECT * FROM sections WHERE unit_id = ? AND name = ?', (unit['id'], section_name))
+    section = cursor_topics.fetchone()
 
     if not section:
         flash('Section not found.', 'alert')
-        conn.close()
+        conn_topics.close()
         return redirect(url_for('unit_detail', level=level, topic_name=topic_name, unit_name=unit_name))
 
     section_content = section['content']
     title = f"{topic['display_name']} - {unit['display_name']} - {section['display_name']}"
 
     # Fetch the sub-sections associated with the section
-    cursor.execute('SELECT * FROM sub_sections WHERE section_id = ?', (section['id'],))
-    sub_sections = cursor.fetchall()
+    cursor_topics.execute('SELECT * FROM sub_sections WHERE section_id = ?', (section['id'],))
+    sub_sections = cursor_topics.fetchall()
 
     # Convert sqlite3.Row objects to dictionaries
     sub_sections = [dict(sub_section) for sub_section in sub_sections]
@@ -466,55 +476,55 @@ def section_detail(level, topic_name, unit_name, section_name):
     # Ensure progress is a number between 0 and 100
     section['progress'] = (section['score'] / section['maximum_score']) * 100 if section['maximum_score'] > 0 else 0
 
-    conn.close()
+    conn_topics.close()
     return render_template('section_template.html', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name, section_content=section_content, sub_sections=sub_sections, display_name=section['display_name'], title=title)
 
 @app.route('/topic/<string:level>/<string:topic_name>/<string:unit_name>/<string:section_name>/<string:sub_section_name>')
 def sub_section_detail(level, topic_name, unit_name, section_name, sub_section_name):
-    conn = get_topics_db_connection()
-    cursor = conn.cursor()
+    conn_topics = get_topics_db_connection()
+    cursor_topics = conn_topics.cursor()
 
     # Fetch the topic details
-    cursor.execute('SELECT * FROM topics WHERE level = ? AND name = ?', (level, topic_name))
-    topic = cursor.fetchone()
+    cursor_topics.execute('SELECT * FROM topics WHERE level = ? AND name = ?', (level, topic_name))
+    topic = cursor_topics.fetchone()
 
     if not topic:
         flash('Topic not found.', 'alert')
-        conn.close()
+        conn_topics.close()
         return redirect(url_for('home'))
 
     # Fetch the unit details
-    cursor.execute('SELECT * FROM units WHERE topic_id = ? AND name = ?', (topic['id'], unit_name))
-    unit = cursor.fetchone()
+    cursor_topics.execute('SELECT * FROM units WHERE topic_id = ? AND name = ?', (topic['id'], unit_name))
+    unit = cursor_topics.fetchone()
 
     if not unit:
         flash('Unit not found.', 'alert')
-        conn.close()
+        conn_topics.close()
         return redirect(url_for('topic_detail', level=level, topic_name=topic_name))
 
     # Fetch the section details
-    cursor.execute('SELECT * FROM sections WHERE unit_id = ? AND name = ?', (unit['id'], section_name))
-    section = cursor.fetchone()
+    cursor_topics.execute('SELECT * FROM sections WHERE unit_id = ? AND name = ?', (unit['id'], section_name))
+    section = cursor_topics.fetchone()
 
     if not section:
         flash('Section not found.', 'alert')
-        conn.close()
+        conn_topics.close()
         return redirect(url_for('unit_detail', level=level, topic_name=topic_name, unit_name=unit_name))
 
     
     # Fetch the sub-section details
-    cursor.execute('SELECT * FROM sub_sections WHERE section_id = ? AND name = ?', (section['id'], sub_section_name))
-    sub_section = cursor.fetchone()
+    cursor_topics.execute('SELECT * FROM sub_sections WHERE section_id = ? AND name = ?', (section['id'], sub_section_name))
+    sub_section = cursor_topics.fetchone()
 
     if not sub_section:
         flash('Sub-section not found.', 'alert')
-        conn.close()
+        conn_topics.close()
         return redirect(url_for('section_detail', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name))
 
     sub_section_content = sub_section['content']
     title = f"{topic['display_name']} - {unit['display_name']} - {section['display_name']} - {sub_section['display_name']}"
 
-    conn.close()
+    conn_topics.close()
     return render_template('sub_section_template.html', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name, sub_section_name=sub_section_name, sub_section_content=sub_section_content, display_name=sub_section['display_name'], title=title)
 
 if __name__ == '__main__':
