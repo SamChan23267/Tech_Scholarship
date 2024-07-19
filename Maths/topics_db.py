@@ -1,13 +1,14 @@
 import sqlite3
 
 # Connect to the database (or create it if it doesn't exist)
-conn = sqlite3.connect('topics.db')
+conn_topics = sqlite3.connect('topics.db')
 
 # Create a cursor object to execute SQL commands
-cursor = conn.cursor()
+cursor_topics = conn_topics.cursor()
 
+cursor_topics.execute('ALTER TABLE sub_sections DROP COLUMN score')
 # Create the topics table
-cursor.execute('''
+cursor_topics.execute('''
 CREATE TABLE IF NOT EXISTS topics (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     level TEXT NOT NULL,
@@ -18,7 +19,7 @@ CREATE TABLE IF NOT EXISTS topics (
 ''')
 
 # Create the units table
-cursor.execute('''
+cursor_topics.execute('''
 CREATE TABLE IF NOT EXISTS units (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     topic_id INTEGER NOT NULL,
@@ -30,7 +31,7 @@ CREATE TABLE IF NOT EXISTS units (
 ''')
 
 # Create the sections table
-cursor.execute('''
+cursor_topics.execute('''
 CREATE TABLE IF NOT EXISTS sections (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     unit_id INTEGER NOT NULL,
@@ -41,7 +42,7 @@ CREATE TABLE IF NOT EXISTS sections (
 )
 ''')
 
-cursor.execute('''
+cursor_topics.execute('''
 CREATE TABLE IF NOT EXISTS sub_sections (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     section_id INTEGER NOT NULL,
@@ -61,26 +62,26 @@ CREATE TABLE IF NOT EXISTS sub_sections (
 
 
 # Commit the changes and close the connection
-conn.commit()
-conn.close()
+conn_topics.commit()
+conn_topics.close()
 
 import sqlite3
 
 def get_db_connection():
-    conn = sqlite3.connect('topics.db')
-    conn.row_factory = sqlite3.Row
-    return conn
+    conn_topics = sqlite3.connect('topics.db')
+    conn_topics.row_factory = sqlite3.Row
+    return conn_topics
 
 def update_topic_content(topic_id, level=None, name=None, display_name=None, new_content=None):
-    conn = sqlite3.connect('topics.db')
-    cursor = conn.cursor()
+    conn_topics = sqlite3.connect('topics.db')
+    cursor_topics = conn_topics.cursor_topics()
 
     # Fetch the current values of the topic
-    cursor.execute('SELECT * FROM topics WHERE id = ?', (topic_id,))
-    topic = cursor.fetchone()
+    cursor_topics.execute('SELECT * FROM topics WHERE id = ?', (topic_id,))
+    topic = cursor_topics.fetchone()
 
     if not topic:
-        conn.close()
+        conn_topics.close()
         raise ValueError(f"Topic with id {topic_id} not found.")
 
     # Prepare the update statement with the current values if new values are empty
@@ -89,25 +90,25 @@ def update_topic_content(topic_id, level=None, name=None, display_name=None, new
     updated_display_name = display_name if display_name else topic[3]  # topic[3] corresponds to 'display_name'
     updated_content = new_content if new_content else topic[4]  # topic[4] corresponds to 'content'
 
-    cursor.execute('''
+    cursor_topics.execute('''
         UPDATE topics
         SET level = ?, name = ?, display_name = ?, content = ?
         WHERE id = ?
     ''', (updated_level, updated_name, updated_display_name, updated_content, topic_id))
 
-    conn.commit()
-    conn.close()
+    conn_topics.commit()
+    conn_topics.close()
 
 def update_unit_content(unit_id, topic_id=None, name=None, display_name=None, score=None, maximum_score=None, new_content=None):
-    conn = sqlite3.connect('topics.db')
-    cursor = conn.cursor()
+    conn_topics = sqlite3.connect('topics.db')
+    cursor_topics = conn_topics.cursor_topics()
 
     # Fetch the current values of the unit
-    cursor.execute('SELECT * FROM units WHERE id = ?', (unit_id,))
-    unit = cursor.fetchone()
+    cursor_topics.execute('SELECT * FROM units WHERE id = ?', (unit_id,))
+    unit = cursor_topics.fetchone()
 
     if not unit:
-        conn.close()
+        conn_topics.close()
         raise ValueError(f"Unit with id {unit_id} not found.")
 
     # Prepare the update statement with the current values if new values are empty
@@ -118,25 +119,25 @@ def update_unit_content(unit_id, topic_id=None, name=None, display_name=None, sc
     updated_maximum_score = maximum_score if maximum_score is not None else unit[5]  # unit[5] corresponds to 'maximum_score'
     updated_content = new_content if new_content else unit[6]  # unit[6] corresponds to 'content'
 
-    cursor.execute('''
+    cursor_topics.execute('''
         UPDATE units
         SET topic_id = ?, name = ?, display_name = ?, score = ?, maximum_score = ?, content = ?
         WHERE id = ?
     ''', (updated_topic_id, updated_name, updated_display_name, updated_score, updated_maximum_score, updated_content, unit_id))
 
-    conn.commit()
-    conn.close()
+    conn_topics.commit()
+    conn_topics.close()
 
 def update_section(section_id, unit_id=None, name=None, display_name=None, content=None):
-    conn = sqlite3.connect('topics.db')
-    cursor = conn.cursor()
+    conn_topics = sqlite3.connect('topics.db')
+    cursor_topics = conn_topics.cursor()
 
     # Fetch the current values of the section
-    cursor.execute('SELECT * FROM sections WHERE id = ?', (section_id,))
-    section = cursor.fetchone()
+    cursor_topics.execute('SELECT * FROM sections WHERE id = ?', (section_id,))
+    section = cursor_topics.fetchone()
 
     if not section:
-        conn.close()
+        conn_topics.close()
         raise ValueError(f"Section with id {section_id} not found.")
 
     # Prepare the update statement with the current values if new values are empty
@@ -145,55 +146,56 @@ def update_section(section_id, unit_id=None, name=None, display_name=None, conte
     updated_display_name = display_name if display_name else section[3]  # section[3] corresponds to 'display_name'
     updated_content = content if content else section[4]  # section[4] corresponds to 'content'
 
-    cursor.execute('''
+    cursor_topics.execute('''
         UPDATE sections
         SET unit_id = ?, name = ?, display_name = ?, content = ?
         WHERE id = ?
     ''', (updated_unit_id, updated_name, updated_display_name, updated_content, section_id))
 
-    conn.commit()
-    conn.close()
+    conn_topics.commit()
+    conn_topics.close()
 
 def insert_section(unit_id, name, display_name, content=None):
-    conn = sqlite3.connect('topics.db')
-    cursor = conn.cursor()
-    cursor.execute('INSERT INTO sections (unit_id, name, display_name, content) VALUES (?, ?, ?, ?)', 
+    conn_topics = sqlite3.connect('topics.db')
+    cursor_topics = conn_topics.cursor()
+    cursor_topics.execute('INSERT INTO sections (unit_id, name, display_name, content) VALUES (?, ?, ?, ?)', 
                    (unit_id, name, display_name, content))
-    conn.commit()
-    conn.close()
+    conn_topics.commit()
+    conn_topics.close()
 
 def insert_sub_section(section_id, type, name, display_name, score, maximum_score, content=None):
-    conn = sqlite3.connect('topics.db')
-    cursor = conn.cursor()
-    cursor.execute('INSERT INTO sub_sections (section_id, type, name, display_name, score, maximum_score, content) VALUES (?, ?, ?, ?, ?, ?, ?)', 
+    conn_topics = sqlite3.connect('topics.db')
+    cursor_topics = conn_topics.cursor()
+    cursor_topics.execute('INSERT INTO sub_sections (section_id, type, name, display_name, score, maximum_score, content) VALUES (?, ?, ?, ?, ?, ?, ?)', 
                    (section_id, type, name, display_name, score, maximum_score, content))
-    conn.commit()
-    conn.close()
+    conn_topics.commit()
+    conn_topics.close()
 
 def insert_sample_data():
-    conn = get_db_connection()
-    cursor = conn.cursor()
+    conn_topics = get_db_connection()
+    cursor_topics = conn_topics.cursor()
 
     # Insert sample topics
-    cursor.execute('INSERT INTO topics (level, name, display_name) VALUES (?, ?, ?)', ('level1', 'number', 'Level 1 Number'))
-    cursor.execute('INSERT INTO topics (level, name, display_name) VALUES (?, ?, ?)', ('level1', 'algebra and graphs', 'Level 1 Algebra and Graphs'))
-    cursor.execute('INSERT INTO topics (level, name, display_name) VALUES (?, ?, ?)', ('level1', 'measurement', 'Level 1 Measurement'))
-    cursor.execute('INSERT INTO topics (level, name, display_name) VALUES (?, ?, ?)', ('level1', 'geometry and trignometry', 'Level 1 Geometry and Trigonometry'))
-    cursor.execute('INSERT INTO topics (level, name, display_name) VALUES (?, ?, ?)', ('level1', 'statistics and probability', 'Level 1 Statistics and Proabality'))
+    cursor_topics.execute('INSERT INTO topics (level, name, display_name) VALUES (?, ?, ?)', ('level1', 'number', 'Level 1 Number'))
+    cursor_topics.execute('INSERT INTO topics (level, name, display_name) VALUES (?, ?, ?)', ('level1', 'algebra and graphs', 'Level 1 Algebra and Graphs'))
+    cursor_topics.execute('INSERT INTO topics (level, name, display_name) VALUES (?, ?, ?)', ('level1', 'measurement', 'Level 1 Measurement'))
+    cursor_topics.execute('INSERT INTO topics (level, name, display_name) VALUES (?, ?, ?)', ('level1', 'geometry and trignometry', 'Level 1 Geometry and Trigonometry'))
+    cursor_topics.execute('INSERT INTO topics (level, name, display_name) VALUES (?, ?, ?)', ('level1', 'statistics and probability', 'Level 1 Statistics and Proabality'))
 
     # Insert sample units
-    cursor.execute('INSERT INTO units (topic_id, name, display_name) VALUES (?, ?, ?)', (1, 'addition', 'Addition'))
-    cursor.execute('INSERT INTO units (topic_id, name, display_name) VALUES (?, ?, ?)', (1, 'subtraction', 'Subtraction'))
-    cursor.execute('INSERT INTO units (topic_id, name, display_name) VALUES (?, ?, ?)', (1, 'multiplication', 'Multiplication'))
-    cursor.execute('INSERT INTO units (topic_id, name, display_name) VALUES (?, ?, ?)', (1, 'division', 'Division'))
+    cursor_topics.execute('INSERT INTO units (topic_id, name, display_name) VALUES (?, ?, ?)', (1, 'addition', 'Addition'))
+    cursor_topics.execute('INSERT INTO units (topic_id, name, display_name) VALUES (?, ?, ?)', (1, 'subtraction', 'Subtraction'))
+    cursor_topics.execute('INSERT INTO units (topic_id, name, display_name) VALUES (?, ?, ?)', (1, 'multiplication', 'Multiplication'))
+    cursor_topics.execute('INSERT INTO units (topic_id, name, display_name) VALUES (?, ?, ?)', (1, 'division', 'Division'))
 
-    conn.commit()
-    conn.close()
+    conn_topics.commit()
+    conn_topics.close()
 
 
 if __name__ == '__main__':
-    conn.commit()
-    conn.close()    
+    cursor_topics.execute('ALTER TABLE sub_sections DROP COLUMN score')
+    conn_topics.commit()
+    conn_topics.close()    
     
     '''insert_sample_data()
     insert_section(1, 'basic', 'addition basics', 'This section covers the basics of addition')

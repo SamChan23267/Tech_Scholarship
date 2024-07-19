@@ -70,6 +70,33 @@ def close_conn(exception):
     if 'conn_topics' in g:
         g.conn_topics.close()
 
+def get_user_scores(user_id):
+    conn_users = get_users_db_connection()
+    cursor_users = conn_users.cursor()
+
+    cursor_users.execute('SELECT score FROM users WHERE id = ?', (user_id,))
+    user_scores = cursor_users.fetchone()
+    user_scores = eval(user_scores['score']) if user_scores and user_scores['score'] else {}
+
+    conn_users.close()
+    return user_scores
+
+def update_user_score(user_id, sub_section_id, score):
+    conn_users = get_users_db_connection()
+    cursor_users = conn_users.cursor()
+
+    # Fetch existing scores
+    cursor_users.execute('SELECT score FROM users WHERE id = ?', (user_id,))
+    user_scores = cursor_users.fetchone()
+    user_scores = eval(user_scores['score']) if user_scores and user_scores['score'] else {}
+
+    # Update the score for the specific sub_section
+    user_scores[str(sub_section_id)] = score
+
+    # Store the updated scores back in the database
+    cursor_users.execute('UPDATE users SET score = ? WHERE id = ?', (str(user_scores), user_id))
+    conn_users.commit()
+    conn_users.close()
 
 def get_google_provider_cfg():
     return requests.get(GOOGLE_DISCOVERY_URL).json()
@@ -89,6 +116,8 @@ def auth():
         return redirect(url_for('user_home'))
     
     if request.method == 'POST':
+        conn_users = get_users_db_connection()
+        cursor_users = conn_users.cursor()
         if action == 'signup':
             email = request.form.get('register email')
             password = request.form.get('create password')
@@ -103,9 +132,6 @@ def auth():
             if not password_pattern.match(password):
                 flash('Password must be 6-16 characters long.', 'alert')
                 return redirect(url_for('auth', action='signup'))
-
-            conn_users = get_users_db_connection()
-            cursor_users = conn_users.cursor()
             
             # check if the email already exists
             cursor_users.execute('SELECT * FROM users WHERE email = ?', (email,))
@@ -152,6 +178,7 @@ def auth():
             # Verify the password
             if check_password_hash(user['password'], password):
                 session['user'] = user['username']
+                session['user_id'] = user['id']
                 flash('Login successful!', 'success')
                 conn_users.close()
                 return redirect(url_for('user_home'))
@@ -231,6 +258,7 @@ def callback():
         return redirect(url_for('create_username'))
 
     session['user'] = user['username']
+    session['user_id'] = user['id']
     flash('Login successful!', 'success')
     conn_users.close()
     return redirect(url_for('user_home'))
@@ -279,6 +307,9 @@ def topic_detail(level, topic_name):
     conn_topics = get_topics_db_connection()
     cursor_topics = conn_topics.cursor()
 
+    conn_users = get_users_db_connection()
+    cursor_users = conn_users.cursor()
+
     # Fetch the topic details
     cursor_topics.execute('SELECT * FROM topics WHERE level = ? AND name = ?', (level, topic_name))
     topic = cursor_topics.fetchone()
@@ -286,11 +317,11 @@ def topic_detail(level, topic_name):
     if not topic:
         flash('Topic not found.', 'alert')
         conn_topics.close()
+        conn_users.close()
         return redirect(url_for('home'))
     
     # Convert sqlite3.Row object to dictionary
     topic = dict(topic)
-
 
     # Fetch the units associated with the topic
     cursor_topics.execute('SELECT * FROM units WHERE topic_id = ?', (topic['id'],))
@@ -298,6 +329,10 @@ def topic_detail(level, topic_name):
 
     # Convert sqlite3.Row objects to dictionaries
     units = [dict(unit) for unit in units]
+
+    user_id = session['user_id']
+    user_scores = get_user_scores(user_id)
+
     for unit in units:
         cursor_topics.execute('SELECT * FROM sections WHERE unit_id = ?', (unit['id'],))
         sections = cursor_topics.fetchall()
@@ -316,7 +351,7 @@ def topic_detail(level, topic_name):
         unit_points = 0
         unit_maximum_points = 0
         for section in unit['sections']:
-            section_points = sum(sub_section['score'] for sub_section in section['sub_sections'])
+            section_points = sum(user_scores.get(str(sub_section['id']), 0) for sub_section in section['sub_sections'])
             section_maximum_points = sum(sub_section['maximum_score'] for sub_section in section['sub_sections'])
             section['score'] = section_points
             section['maximum_score'] = section_maximum_points
@@ -339,6 +374,9 @@ def unit_detail(level, topic_name, unit_name):
     conn_topics = get_topics_db_connection()
     cursor_topics = conn_topics.cursor()
 
+    conn_users = get_users_db_connection()
+    cursor_users = conn_users.cursor()
+
     # Fetch the topic details
     cursor_topics.execute('SELECT * FROM topics WHERE level = ? AND name = ?', (level, topic_name))
     topic = cursor_topics.fetchone()
@@ -346,6 +384,7 @@ def unit_detail(level, topic_name, unit_name):
     if not topic:
         flash('Topic not found.', 'alert')
         conn_topics.close()
+        conn_users.close()
         return redirect(url_for('home'))
     
     # Convert sqlite3.Row object to dictionary
@@ -365,6 +404,7 @@ def unit_detail(level, topic_name, unit_name):
     if not unit_current:
         flash('Unit not found.', 'alert')
         conn_topics.close()
+        conn_users.close()
         return redirect(url_for('topic_detail', level=level, topic_name=topic_name))
 
     # Convert sqlite3.Row object to dictionary
@@ -373,6 +413,8 @@ def unit_detail(level, topic_name, unit_name):
     # unit_content = unit['content']
     title = f"{topic['display_name']} - {unit_current['display_name']}"
 
+    user_id = session['user_id']
+    user_scores = get_user_scores(user_id)
 
     # Fetch the sections associated with each unit
     for unit in unit_dict:
@@ -392,7 +434,7 @@ def unit_detail(level, topic_name, unit_name):
         unit_points = 0
         unit_maximum_points = 0
         for section in unit['sections']:
-            section_points = sum(sub_section['score'] for sub_section in section['sub_sections'])
+            section_points = sum(user_scores.get(str(sub_section['id']), 0) for sub_section in section['sub_sections'])
             section_maximum_points = sum(sub_section['maximum_score'] for sub_section in section['sub_sections'])
             section['score'] = section_points
             section['maximum_score'] = section_maximum_points
@@ -430,6 +472,9 @@ def section_detail(level, topic_name, unit_name, section_name):
     conn_topics = get_topics_db_connection()
     cursor_topics = conn_topics.cursor()
 
+    conn_users = get_users_db_connection()
+    cursor_users = conn_users.cursor()
+
     # Fetch the topic details
     cursor_topics.execute('SELECT * FROM topics WHERE level = ? AND name = ?', (level, topic_name))
     topic = cursor_topics.fetchone()
@@ -437,6 +482,7 @@ def section_detail(level, topic_name, unit_name, section_name):
     if not topic:
         flash('Topic not found.', 'alert')
         conn_topics.close()
+        conn_users.close()
         return redirect(url_for('home'))
 
     # Fetch the unit details
@@ -446,6 +492,7 @@ def section_detail(level, topic_name, unit_name, section_name):
     if not unit:
         flash('Unit not found.', 'alert')
         conn_topics.close()
+        conn_users.close()
         return redirect(url_for('topic_detail', level=level, topic_name=topic_name))
 
     # Fetch the section details
@@ -455,6 +502,7 @@ def section_detail(level, topic_name, unit_name, section_name):
     if not section:
         flash('Section not found.', 'alert')
         conn_topics.close()
+        conn_users.close()
         return redirect(url_for('unit_detail', level=level, topic_name=topic_name, unit_name=unit_name))
 
     section_content = section['content']
@@ -467,8 +515,12 @@ def section_detail(level, topic_name, unit_name, section_name):
     # Convert sqlite3.Row objects to dictionaries
     sub_sections = [dict(sub_section) for sub_section in sub_sections]
 
+    # Fetch user scores
+    user_id = session['user_id']
+    user_scores = get_user_scores(user_id)
+
     # Calculate section score and maximum score
-    section_points = sum(sub_section['score'] for sub_section in sub_sections)
+    section_points = sum(user_scores.get(str(sub_section['id']), 0) for sub_section in sub_sections)
     section_maximum_points = sum(sub_section['maximum_score'] for sub_section in sub_sections)
     section['score'] = section_points
     section['maximum_score'] = section_maximum_points
@@ -477,12 +529,16 @@ def section_detail(level, topic_name, unit_name, section_name):
     section['progress'] = (section['score'] / section['maximum_score']) * 100 if section['maximum_score'] > 0 else 0
 
     conn_topics.close()
+    conn_users.close()
     return render_template('section_template.html', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name, section_content=section_content, sub_sections=sub_sections, display_name=section['display_name'], title=title)
 
 @app.route('/topic/<string:level>/<string:topic_name>/<string:unit_name>/<string:section_name>/<string:sub_section_name>')
 def sub_section_detail(level, topic_name, unit_name, section_name, sub_section_name):
     conn_topics = get_topics_db_connection()
     cursor_topics = conn_topics.cursor()
+
+    conn_users = get_users_db_connection()
+    cursor_users = conn_users.cursor()
 
     # Fetch the topic details
     cursor_topics.execute('SELECT * FROM topics WHERE level = ? AND name = ?', (level, topic_name))
@@ -491,6 +547,7 @@ def sub_section_detail(level, topic_name, unit_name, section_name, sub_section_n
     if not topic:
         flash('Topic not found.', 'alert')
         conn_topics.close()
+        conn_users.close()
         return redirect(url_for('home'))
 
     # Fetch the unit details
@@ -500,6 +557,7 @@ def sub_section_detail(level, topic_name, unit_name, section_name, sub_section_n
     if not unit:
         flash('Unit not found.', 'alert')
         conn_topics.close()
+        conn_users.close()
         return redirect(url_for('topic_detail', level=level, topic_name=topic_name))
 
     # Fetch the section details
@@ -509,6 +567,7 @@ def sub_section_detail(level, topic_name, unit_name, section_name, sub_section_n
     if not section:
         flash('Section not found.', 'alert')
         conn_topics.close()
+        conn_users.close()
         return redirect(url_for('unit_detail', level=level, topic_name=topic_name, unit_name=unit_name))
 
     
@@ -519,13 +578,21 @@ def sub_section_detail(level, topic_name, unit_name, section_name, sub_section_n
     if not sub_section:
         flash('Sub-section not found.', 'alert')
         conn_topics.close()
+        conn_users.close()
         return redirect(url_for('section_detail', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name))
 
     sub_section_content = sub_section['content']
     title = f"{topic['display_name']} - {unit['display_name']} - {section['display_name']} - {sub_section['display_name']}"
+    
+    user_id = session['user_id']
+    user_scores = get_user_scores(user_id)
+    
+    # Calculate sub-section score and maximum score
+    sub_section_score = user_scores.get(str(sub_section['id']), 0)
+    sub_section_maximum_score = sub_section['maximum_score']
 
     conn_topics.close()
-    return render_template('sub_section_template.html', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name, sub_section_name=sub_section_name, sub_section_content=sub_section_content, display_name=sub_section['display_name'], title=title)
+    return render_template('sub_section_template.html', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name, sub_section_name=sub_section_name, sub_section_content=sub_section_content, display_name=sub_section['display_name'], title=title, sub_section_score=sub_section_score, sub_section_maximum_score=sub_section_maximum_score)
 
 if __name__ == '__main__':
     app.run(debug=True)
