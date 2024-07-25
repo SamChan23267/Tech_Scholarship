@@ -461,9 +461,7 @@ def unit_detail(level, topic_name, unit_name):
         sub_sections = cursor_topics.fetchall()
         section['sub_sections'] = [dict(sub_section) for sub_section in sub_sections]
         section_current.append(section)
-    print(section_current)
     conn_topics.close()
-    print(unit_current)
     return render_template('content_template.html', level=level, topic_name=topic_name, unit_name=unit_name, unit_content=unit.get('content', 'N/A'), units=unit_dict, sections=sections, section_current=section_current, display_name=topic['display_name'], title=title, is_topic=False)
     
 
@@ -505,6 +503,10 @@ def section_detail(level, topic_name, unit_name, section_name):
         conn_users.close()
         return redirect(url_for('unit_detail', level=level, topic_name=topic_name, unit_name=unit_name))
 
+    # Covert sqlite3.Row object to dictionary
+    section = dict(section)
+    
+
     section_content = section['content']
     title = f"{topic['display_name']} - {unit['display_name']} - {section['display_name']}"
 
@@ -524,13 +526,14 @@ def section_detail(level, topic_name, unit_name, section_name):
     section_maximum_points = sum(sub_section['maximum_score'] for sub_section in sub_sections)
     section['score'] = section_points
     section['maximum_score'] = section_maximum_points
+    section_display_name=section['display_name']
 
     # Ensure progress is a number between 0 and 100
     section['progress'] = (section['score'] / section['maximum_score']) * 100 if section['maximum_score'] > 0 else 0
 
     conn_topics.close()
     conn_users.close()
-    return render_template('section_template.html', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name, section_content=section_content, sub_sections=sub_sections, display_name=section['display_name'], title=title)
+    return render_template('section_template.html', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name, section_content=section_content, sub_sections=sub_sections, section_display_name=section_display_name, title=title, is_section=True)
 
 @app.route('/topic/<string:level>/<string:topic_name>/<string:unit_name>/<string:section_name>/<string:sub_section_name>')
 def sub_section_detail(level, topic_name, unit_name, section_name, sub_section_name):
@@ -581,7 +584,16 @@ def sub_section_detail(level, topic_name, unit_name, section_name, sub_section_n
         conn_users.close()
         return redirect(url_for('section_detail', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name))
 
+    cursor_topics.execute('SELECT * FROM sub_sections WHERE section_id = ?', (section['id'],))
+    sub_sections = cursor_topics.fetchall()
+    # Convert sqlite3.Row objects to dictionaries
+    sub_section = dict(sub_section)
+    sub_sections_list = [dict(sub_section) for sub_section in sub_sections]
+
     sub_section_content = sub_section['content']
+    sub_section_type = sub_section['type']
+    section_display_name = section['display_name']
+    sub_section_display_name = sub_section['display_name']
     title = f"{topic['display_name']} - {unit['display_name']} - {section['display_name']} - {sub_section['display_name']}"
     
     user_id = session['user_id']
@@ -592,7 +604,7 @@ def sub_section_detail(level, topic_name, unit_name, section_name, sub_section_n
     sub_section_maximum_score = sub_section['maximum_score']
 
     conn_topics.close()
-    return render_template('sub_section_template.html', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name, sub_section_name=sub_section_name, sub_section_content=sub_section_content, display_name=sub_section['display_name'], title=title, sub_section_score=sub_section_score, sub_section_maximum_score=sub_section_maximum_score)
+    return render_template('section_template.html', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name, sub_section_name=sub_section_name, sub_section_content=sub_section_content, sub_section_type=sub_section_type, section_display_name=section_display_name, sub_section_display_name=sub_section_display_name, title=title, sub_section_score=sub_section_score, sub_section_maximum_score=sub_section_maximum_score, sub_sections=sub_sections_list, is_section=False)
 
 if __name__ == '__main__':
     app.run(debug=True)

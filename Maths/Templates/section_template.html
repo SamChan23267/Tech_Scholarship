@@ -15,7 +15,7 @@
         <div class="left-section">
             <div class="course-navigation">
                 <div class="section-section">   
-                    <a href="{{ url_for('section_detail', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name) }}">{{ display_name }}</a>
+                    <a href="{{ url_for('section_detail', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name) }}">{{ section_display_name }}</a>
                 </div> 
                 <div class="sub-section-section">
                     <ul>
@@ -33,9 +33,26 @@
 
         <div class="right-section">
             <main>
-                <h1>{{ section_content.title }}</h1>
-                <p>{{ section_content.content }}</p>
-                <!-- Add more content as needed -->
+                <div class="main-content">
+                    {% if is_section %}
+                        <h1>{{ title }}</h1>
+                        <p>{{ section_content }}</p>
+                        <!-- Add more content as needed -->
+                    {% else %} <!--if not section-->
+                        <h1>{{ title }}</h1>
+                        {% if sub_section_type == 'video' %}
+                            <video controls>
+                                <source src="{{ sub_section_content }}" type="video/mp4">
+                                Your browser does not support the video tag.
+                            </video>
+                        {% elif sub_section_type == 'notes' %}
+                            <p>{{ sub_section_content }}</p>
+                        {% elif sub_section_type == 'quiz' %}
+                            <!-- Add quiz rendering logic here -->
+                            <p>Quiz content goes here.</p>
+                        {% endif %}
+                    {% endif %}
+                </div>
             </main>
         </div>
     </div>
@@ -48,7 +65,7 @@
             // Function to set the active class based on the current URL
             function setActiveClass() {
                 // Remove active class from all section and sub-section boxes
-                document.querySelectorAll('.section-section a, .sub-section li a').forEach(function(element) {
+                document.querySelectorAll('.section-section a, .sub-section-section li a').forEach(function(element) {
                     element.classList.remove('active');
                 });
 
@@ -61,7 +78,7 @@
                 });
 
                 // Check for sub-section detail URL
-                document.querySelectorAll('.sub-section li a').forEach(function(element) {
+                document.querySelectorAll('.sub-section-section li a').forEach(function(element) {
                     const href = element.getAttribute('href');
                     if (currentPath === href) {
                         element.classList.add('active');
