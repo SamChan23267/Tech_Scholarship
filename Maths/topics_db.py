@@ -199,21 +199,43 @@ if __name__ == '__main__':
     cursor_topics = conn_topics.cursor() 
 
     sample_questions = {
+        "no. of questions": 4,
         "questions": {
             1: {
                 "type": "multiple_choice",
-                "question": "What is 2 + 2?",
+                "question": "2 + 2 = ?",
                 "options": ["3", "4", "5", "6"],
                 "answer": "4",
                 "explanation": "2 + 2 equals 4."
             },
             2: {
                 "type": "multiple_choice",
-                "question": "What is 2 + 3?",
+                "question": "2 + 3 = ?",
                 "options": ["3", "4", "5", "6"],
                 "answer": "5",
                 "explanation": "2 + 3 equals 5."
-            }
+            }, 
+            3: {
+                "type": "multiple_choice",
+                "question": "2 + 4 = ?",
+                "options": ["3", "4", "5", "6"],
+                "answer": "6",
+                "explanation": "2 + 4 equals 6."
+            },
+            4: {
+                "type": "multiple_choice",
+                "question": "3 + 5 = ?",
+                "options": ["5", "6", "7", "8"],
+                "answer": "7",
+                "explanation": "2 + 5 equals 7."
+            },
+            5: {
+                "type": "multiple_choice",
+                "question": "3 + 6 = ?",
+                "options": ["7", "8", "9", "10"],
+                "answer": "9",
+                "explanation": "3 + 6 equals 9."
+            },
         }
     }
     cursor_topics.execute('''
