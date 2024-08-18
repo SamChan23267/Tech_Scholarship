@@ -4,6 +4,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from oauthlib.oauth2 import WebApplicationClient
 import requests
 import json
+import random
 from functools import wraps
 import os
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
@@ -607,6 +608,14 @@ def sub_section_detail(level, topic_name, unit_name, section_name, sub_section_n
     # Calculate sub-section score and maximum score
     sub_section_score = user_scores.get(str(sub_section['id']), 0)
     sub_section_maximum_score = sub_section['maximum_score']
+
+
+    if sub_section_type == 'practice':
+        no_of_questions = sub_section_content.get('no. of questions', 0)
+        questions = sub_section_content.get('questions', {})
+        selected_questions = dict(random.sample(list(questions.items()), min(no_of_questions, len(questions))))
+        sub_section_content['questions'] = selected_questions
+
 
     conn_topics.close()
     return render_template('section_template.html', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name, sub_section_name=sub_section_name, sub_section_content=sub_section_content, sub_section_type=sub_section_type, section_display_name=section_display_name, sub_section_display_name=sub_section_display_name, title=title, sub_section_score=sub_section_score, sub_section_maximum_score=sub_section_maximum_score, sub_sections=sub_sections_list, is_section=False)

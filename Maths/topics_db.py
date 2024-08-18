@@ -226,8 +226,8 @@ if __name__ == '__main__':
                 "type": "multiple_choice",
                 "question": "3 + 5 = ?",
                 "options": ["5", "6", "7", "8"],
-                "answer": "7",
-                "explanation": "2 + 5 equals 7."
+                "answer": "8",
+                "explanation": "2 + 5 equals 8."
             },
             5: {
                 "type": "multiple_choice",
