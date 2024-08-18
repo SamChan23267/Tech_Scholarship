@@ -533,7 +533,7 @@ def section_detail(level, topic_name, unit_name, section_name):
 
     conn_topics.close()
     conn_users.close()
-    return render_template('section_template.html', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name, section_content=section_content, sub_sections=sub_sections, section_display_name=section_display_name, title=title, is_section=True)
+    return render_template('section_template.html', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name, section_content=section_content, sub_sections=sub_sections, section_display_name=section_display_name, title=title, is_section=True, sub_section_content=NotImplemented)
 
 @app.route('/topic/<string:level>/<string:topic_name>/<string:unit_name>/<string:section_name>/<string:sub_section_name>')
 def sub_section_detail(level, topic_name, unit_name, section_name, sub_section_name):
@@ -591,6 +591,11 @@ def sub_section_detail(level, topic_name, unit_name, section_name, sub_section_n
     sub_sections_list = [dict(sub_section) for sub_section in sub_sections]
 
     sub_section_content = sub_section['content']
+    
+    # Ensure sub_section_content is a dictionary
+    if isinstance(sub_section_content, str):
+        sub_section_content = json.loads(sub_section_content)
+
     sub_section_type = sub_section['type']
     section_display_name = section['display_name']
     sub_section_display_name = sub_section['display_name']

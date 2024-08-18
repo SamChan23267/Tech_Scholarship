@@ -47,9 +47,40 @@
                             </video>
                         {% elif sub_section_type == 'notes' %}
                             <p>{{ sub_section_content }}</p>
-                        {% elif sub_section_type == 'quiz' %}
-                            <!-- Add quiz rendering logic here -->
-                            <p>Quiz content goes here.</p>
+                        {% elif sub_section_type == 'practice' %}
+                            <!-- Start Page Section -->
+                            <div id="start-page">
+                                <h2>Welcome to the Quiz</h2>
+                                <p>Click the button below to start the quiz.</p>
+                                <button onclick="startQuiz()">Start Quiz</button>
+                            </div>
+
+                            <!-- Quiz Container -->
+                            <div id="quiz-container" style="display:none;">
+                                {% for question_id, question in sub_section_content.questions.items() %}
+                                    {% if question.type == 'multiple_choice' %}
+                                        <div class="quiz-question" style = "display:none;">
+                                            <p>{{ question.question }}</p>
+                                            <ul>
+                                                {% for option in question.options %}
+                                                    <li>
+                                                        <input type="radio" name="question_{{ question_id }}" value="{{ option }}">
+                                                        <label>{{ option }}</label>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                            <button onclick="checkAnswer('{{ question_id }}', '{{sub_section_content.questions[question_id].answer}}')">Submit</button>
+                                        </div>
+                                    {% elif question.type == 'open_ended' %}
+                                        <!-- Add open-ended question rendering logic here -->
+                                    {% elif question.type == 'coordinate_plane' %}
+                                        <!-- Add coordinate plane question rendering logic here -->
+                                    {% elif question.type == 'matching' %}
+                                        <!-- Add matching question rendering logic here -->
+                                    {% endif %}
+                                {% endfor %}
+                                <input type="hidden" id="current_question_id" value="0">
+                            </div>
                         {% endif %}
                     {% endif %}
                 </div>
@@ -89,6 +120,61 @@
             // Set the active class when the page loads
             setActiveClass();
         });
-    </script>
+        </script>
+        {% if not is_section %}
+    
+        <script>
+            // Function to start the quiz
+            function startQuiz() {
+                document.getElementById('start-page').style.display = 'none';
+                document.getElementById('quiz-container').style.display = 'block';
+                showQuestion(0);
+            }
+
+            // Function to check the answer for multiple choice questions
+            function checkAnswer(questionId, correctAnswer) {
+                const selectedOptionElement = document.querySelector('input[name="question_' + questionId + '"]:checked');
+                if (selectedOptionElement) {
+                    const selectedOption = selectedOptionElement.value;
+                    if (selectedOption === correctAnswer) {
+                        // Logic for correct answer
+                        alert('Correct answer! Moving to the next question.');
+
+                        // Update the current question index
+                        const currentQuestionIdElement = document.getElementById('current_question_id');
+                        let currentQuestionIndex = parseInt(currentQuestionIdElement.value);
+                        currentQuestionIndex += 1;
+                        currentQuestionIdElement.value = currentQuestionIndex;
+
+                        // Logic to move to the next question
+                        showQuestion(currentQuestionIndex);
+                        // Logic to move to the next question
+                    } else {
+                        // Logic for incorrect answer
+                        alert('Incorrect answer. Please try again.');
+                    }
+                } else {
+                    alert('No option selected.');
+                }
+            }
+
+            // Function to show the question based on the current question index
+            function showQuestion(questionIndex) {
+                const questions = document.querySelectorAll('.quiz-question');
+                questions.forEach((question, index) => {
+                    if (index === questionIndex) {
+                        question.style.display = 'block';
+                    } else {
+                        question.style.display = 'none';
+                    }
+                });
+            }
+
+
+                
+
+            
+        </script>
+        {% endif %}
 </body>
 </html>

@@ -1,4 +1,5 @@
 import sqlite3
+import json
 
 # Connect to the database (or create it if it doesn't exist)
 conn_topics = sqlite3.connect('topics.db')
@@ -6,7 +7,7 @@ conn_topics = sqlite3.connect('topics.db')
 # Create a cursor object to execute SQL commands
 cursor_topics = conn_topics.cursor()
 
-cursor_topics.execute('ALTER TABLE sub_sections DROP COLUMN score')
+
 # Create the topics table
 cursor_topics.execute('''
 CREATE TABLE IF NOT EXISTS topics (
@@ -49,7 +50,6 @@ CREATE TABLE IF NOT EXISTS sub_sections (
     type TEXT NOT NULL,
     name TEXT NOT NULL,
     display_name TEXT NOT NULL,
-    score INTEGER NOT NULL,
     maximum_score INTEGER NOT NULL,
     content TEXT,
     FOREIGN KEY (section_id) REFERENCES sections (id)
@@ -193,9 +193,37 @@ def insert_sample_data():
 
 
 if __name__ == '__main__':
-    cursor_topics.execute('ALTER TABLE sub_sections DROP COLUMN score')
+
+        # Connect to the topics.db database
+    conn_topics = sqlite3.connect('topics.db')
+    cursor_topics = conn_topics.cursor() 
+
+    sample_questions = {
+        "questions": {
+            1: {
+                "type": "multiple_choice",
+                "question": "What is 2 + 2?",
+                "options": ["3", "4", "5", "6"],
+                "answer": "4",
+                "explanation": "2 + 2 equals 4."
+            },
+            2: {
+                "type": "multiple_choice",
+                "question": "What is 2 + 3?",
+                "options": ["3", "4", "5", "6"],
+                "answer": "5",
+                "explanation": "2 + 3 equals 5."
+            }
+        }
+    }
+    cursor_topics.execute('''
+        UPDATE sub_sections
+        SET content = ?
+        WHERE id = 2
+    ''', (json.dumps(sample_questions),))
+
     conn_topics.commit()
-    conn_topics.close()    
+    conn_topics.close()
     
     '''insert_sample_data()
     insert_section(1, 'basic', 'addition basics', 'This section covers the basics of addition')
