@@ -138,7 +138,7 @@
             }
 
             // Function to check the answer for multiple choice questions
-            function checkMultipleCHoiceAnswer(questionId, correctAnswer) {
+            function checkMultipleChoiceAnswer(questionId, correctAnswer) {
                 const selectedOptionElement = document.querySelector('input[name="question_' + questionId + '"]:checked');
                 if (selectedOptionElement) {
                     const selectedOption = selectedOptionElement.value;
