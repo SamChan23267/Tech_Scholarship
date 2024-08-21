@@ -131,7 +131,7 @@ body {
 
 
 
-
+/* Styles for the multiple choice question */
 
 
 
@@ -181,9 +181,28 @@ body {
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    display: block;
 }
 
 /* Hover effect for the submit button */
 .quiz-question button:hover {
     background-color: #0056b3;
 }
+
+
+
+
+
+/* Styles for open ended question */
+
+.quiz-question textarea {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    display: block;
+}
+
+

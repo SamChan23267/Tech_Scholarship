@@ -163,11 +163,11 @@ def insert_section(unit_id, name, display_name, content=None):
     conn_topics.commit()
     conn_topics.close()
 
-def insert_sub_section(section_id, type, name, display_name, score, maximum_score, content=None):
+def insert_sub_section(section_id, type, name, display_name, maximum_score, content=None):
     conn_topics = sqlite3.connect('topics.db')
     cursor_topics = conn_topics.cursor()
-    cursor_topics.execute('INSERT INTO sub_sections (section_id, type, name, display_name, score, maximum_score, content) VALUES (?, ?, ?, ?, ?, ?, ?)', 
-                   (section_id, type, name, display_name, score, maximum_score, content))
+    cursor_topics.execute('INSERT INTO sub_sections (section_id, type, name, display_name, maximum_score, content) VALUES (?, ?, ?, ?, ?, ?)', 
+                   (section_id, type, name, display_name, maximum_score, content))
     conn_topics.commit()
     conn_topics.close()
 
@@ -198,7 +198,9 @@ if __name__ == '__main__':
     conn_topics = sqlite3.connect('topics.db')
     cursor_topics = conn_topics.cursor() 
 
-    sample_questions = {
+    insert_sub_section(1, 'practice', 'algebra basics practice 2', 'algebra basics practice', 20, 'This is an open ended question practice')
+
+    sample_questions_mc = {
         "no. of questions": 4,
         "questions": {
             1: {
@@ -238,11 +240,48 @@ if __name__ == '__main__':
             },
         }
     }
+
+    sample_questions_oe = {
+    "no. of questions": 4,
+    "questions": {
+        1: {
+            "type": "open_ended",
+            "question": "2 + 2 = ?",
+            "answer": "4",
+            "explanation": "2 + 2 equals 4."
+        },
+        2: {
+            "type": "open_ended",
+            "question": "2 + 3 = ?",
+            "answer": "5",
+            "explanation": "2 + 3 equals 5."
+        },
+        3: {
+            "type": "open_ended",
+            "question": "2 + 4 = ?",
+            "answer": "6",
+            "explanation": "2 + 4 equals 6."
+        },
+        4: {
+            "type": "open_ended",
+            "question": "3 + 5 = ?",
+            "answer": "8",
+            "explanation": "3 + 5 equals 8."
+        },
+        5: {
+            "type": "open_ended",
+            "question": "3 + 6 = ?",
+            "answer": "9",
+            "explanation": "3 + 6 equals 9."
+        },
+    }
+}
+
     cursor_topics.execute('''
         UPDATE sub_sections
         SET content = ?
-        WHERE id = 2
-    ''', (json.dumps(sample_questions),))
+        WHERE id = 3
+    ''', (json.dumps(sample_questions_oe),))
 
     conn_topics.commit()
     conn_topics.close()
