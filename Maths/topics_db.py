@@ -276,12 +276,59 @@ if __name__ == '__main__':
         },
     }
 }
+    
 
+    sample_notes = '''
+    <style>
+            body {
+                font-family: Arial, sans-serif;
+                margin: 20px;
+                padding: 20px;
+                background-color: #f4f4f4;
+            }
+            h1 {
+                color: #333;
+            }
+            .note {
+                background-color: #fff;
+                border: 1px solid #ddd;
+                padding: 15px;
+                margin-bottom: 10px;
+                border-radius: 5px;
+            }
+        </style>
+        <body>
+        <h1>Notes on Addition</h1>
+        <div class="note">
+            <h2>What is Addition?</h2>
+            <p>Addition is one of the basic arithmetic operations. It represents the total amount of objects together in a collection.</p>
+        </div>
+        <div class="note">
+            <h2>Basic Properties of Addition</h2>
+            <ul>
+                <li><strong>Commutative Property:</strong> \(a + b = b + a\)</li>
+                <li><strong>Associative Property:</strong> \((a + b) + c = a + (b + c)\)</li>
+                <li><strong>Identity Property:</strong> \(a + 0 = a\)</li>
+            </ul>
+        </div>
+        <div class="note">
+            <h2>Examples</h2>
+            <p>Here are some simple examples of addition:</p>
+            <ul>
+                <li>2 + 3 = 5</li>
+                <li>7 + 8 = 15</li>
+                <li>10 + 0 = 10</li>
+            </ul>
+        </div>
+    </body>
+    '''
+
+    
     cursor_topics.execute('''
         UPDATE sub_sections
         SET content = ?
-        WHERE id = 3
-    ''', (json.dumps(sample_questions_oe),))
+        WHERE id = 1
+    ''', (json.dumps(sample_notes),))
 
     conn_topics.commit()
     conn_topics.close()

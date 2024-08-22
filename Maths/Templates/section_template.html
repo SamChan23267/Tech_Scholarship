@@ -46,7 +46,7 @@
                                 Your browser does not support the video tag.
                             </video>
                         {% elif sub_section_type == 'notes' %}
-                            <p>{{ sub_section_content }}</p>
+                            <p>{{ sub_section_content|safe }}</p>
                         {% elif sub_section_type == 'practice' %}
                             <!-- Start Page Section -->
                             <div id="start-page">
@@ -127,6 +127,7 @@
         });
         </script>
         {% if not is_section %}
+        {% if sub_section_type == 'practice' %}
     
         <script>
             
@@ -208,6 +209,9 @@
 
             
         </script>
+        
+        {% endif %}
+
         {% endif %}
 </body>
 </html>
