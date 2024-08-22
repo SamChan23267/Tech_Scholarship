@@ -69,13 +69,13 @@
                                                     </li>
                                                 {% endfor %}
                                             </ul>
-                                            <button onclick="checkMultipleChoiceAnswer('{{ question_id }}', '{{sub_section_content.questions[question_id].answer}}')">Submit</button>
+                                            <button onclick="checkMultipleChoiceAnswer('{{ question_id }}')">Submit</button>
                                         </div>
                                     {% elif question.type == 'open_ended' %}
                                         <div class="quiz-question" style="display:none;">
                                             <p>{{ question.question }}</p>
                                             <textarea name="question_{{ question_id }}" rows="4" cols="50"></textarea>
-                                            <button onclick="checkOpenEndedAnswer('{{ question_id }}', '{{sub_section_content.questions[question_id].answer}}')">Submit</button>
+                                            <button onclick="checkOpenEndedAnswer('{{ question_id }}')">Submit</button>
                                         </div>
                                     {% elif question.type == 'coordinate_plane' %}
                                         <!-- Add coordinate plane question rendering logic here -->
@@ -129,6 +129,7 @@
         {% if not is_section %}
     
         <script>
+            
           
             // Function to start the quiz
             function startQuiz() {
@@ -138,10 +139,11 @@
             }
 
             // Function to check the answer for multiple choice questions
-            function checkMultipleChoiceAnswer(questionId, correctAnswer) {
+            function checkMultipleChoiceAnswer(questionId) {
                 const selectedOptionElement = document.querySelector('input[name="question_' + questionId + '"]:checked');
                 if (selectedOptionElement) {
-                    const selectedOption = selectedOptionElement.value;
+                    const selectedOption = JSON.stringify(selectedOptionElement.value);
+                    const correctAnswer = JSON.stringify(JSON.parse('{{ sub_section_content.questions|tojson }}')[questionId].answer);
                     if (selectedOption === correctAnswer) {
                         alert('Correct answer! Moving to the next question.');
 
@@ -164,10 +166,11 @@
             }
             
             //Function to check the answer for open ended questions
-            function checkOpenEndedAnswer(questionId, correctAnswer) {
+            function checkOpenEndedAnswer(questionId) {
                 const userAnswer = document.querySelector(`textarea[name="question_${questionId}"]`).value.trim();
                 if (userAnswer) {
-                    if (userAnswer=== correctAnswer) {
+                    var correctAnswer = JSON.parse('{{ sub_section_content.questions|tojson }}')[questionId].answer
+                    if (correctAnswer.includes(userAnswer)) {
                         alert('Correct answer! Moving to the next question.');
 
                         // Update the current question index

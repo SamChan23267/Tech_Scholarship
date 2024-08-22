@@ -198,7 +198,7 @@ if __name__ == '__main__':
     conn_topics = sqlite3.connect('topics.db')
     cursor_topics = conn_topics.cursor() 
 
-    insert_sub_section(1, 'practice', 'algebra basics practice 2', 'algebra basics practice', 20, 'This is an open ended question practice')
+    #insert_sub_section(1, 'practice', 'algebra basics practice 2', 'algebra basics practice', 20, 'This is an open ended question practice')
 
     sample_questions_mc = {
         "no. of questions": 4,
@@ -247,31 +247,31 @@ if __name__ == '__main__':
         1: {
             "type": "open_ended",
             "question": "2 + 2 = ?",
-            "answer": "4",
+            "answer": ["4", "four"],
             "explanation": "2 + 2 equals 4."
         },
         2: {
             "type": "open_ended",
             "question": "2 + 3 = ?",
-            "answer": "5",
+            "answer": ["5", "five"],
             "explanation": "2 + 3 equals 5."
         },
         3: {
             "type": "open_ended",
             "question": "2 + 4 = ?",
-            "answer": "6",
+            "answer": ["6", "six"],
             "explanation": "2 + 4 equals 6."
         },
         4: {
             "type": "open_ended",
             "question": "3 + 5 = ?",
-            "answer": "8",
+            "answer": ["8", "eight"],
             "explanation": "3 + 5 equals 8."
         },
         5: {
             "type": "open_ended",
             "question": "3 + 6 = ?",
-            "answer": "9",
+            "answer": ["9", "nine"],
             "explanation": "3 + 6 equals 9."
         },
     }
