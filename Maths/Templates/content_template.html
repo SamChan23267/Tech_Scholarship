@@ -25,7 +25,8 @@
                             <a href="{{ url_for('unit_detail', level=level, topic_name=topic_name, unit_name=unit.name) }}" class="unit-link">
                                 <span>{{ unit.display_name }}</span>
                                 <div class="progress-bar">
-                                    <div class="progress" style="width: {{ unit.progress }}%;"></div>
+                                    <div class="progress" id="progress-{{ unit.name }}"></div>
+                                    <script>document.getElementById(`progress-{{unit.name}}`).style.width = `{{unit.progress}}%`;</script>
                                     <span class="progress-text">{{ unit.progress }}%</span>
                                 </div>
                             </a>
