@@ -86,6 +86,13 @@
                                 <input type="hidden" id="current_question_id" value="0">
                             </div>
 
+                            <!-- End Page Section -->
+                            <div id="end-page" style="display:none;">
+                                <h2>Quiz Completed</h2>
+                                <p>Your score: <span id="score"></span></p>
+                                <button onclick="restartQuiz()">Restart Quiz</button>
+                            </div>
+
                         {% endif %}
                     {% endif %}
                 </div>
@@ -130,7 +137,10 @@
         {% if sub_section_type == 'practice' %}
     
         <script>
-            
+            let currentQuestionIndex = 0;
+            let score = 0;
+            const questions = document.querySelectorAll('.quiz-question');
+            let attempt = false;
           
             // Function to start the quiz
             function startQuiz() {
@@ -153,13 +163,19 @@
                         let currentQuestionIndex = parseInt(currentQuestionIdElement.value);
                         currentQuestionIndex += 1;
                         currentQuestionIdElement.value = currentQuestionIndex;
+                        
+                        // Add score if the question is answered correctly in first attempt
+                        if (attempt == false) {
+                            score ++;
+                        }
 
                         // Logic to move to the next question
                         showQuestion(currentQuestionIndex);
-                        // Logic to move to the next question
+
                     } else {
                         // Logic for incorrect answer
                         alert('Incorrect answer. Please try again.');
+                        attempt = true;
                     }
                 } else {
                     alert('No option selected.');
@@ -180,12 +196,18 @@
                         currentQuestionIndex += 1;
                         currentQuestionIdElement.value = currentQuestionIndex;
 
+                        // Add score if the question is answered correctly in first attempt
+                        if (attempt == false) {
+                            score ++;
+                        }
+
                         // Logic to move to the next question
                         showQuestion(currentQuestionIndex);
-                        // Logic to move to the next question
+                        
                     } else {
                         // Logic for incorrect answer
                         alert('Incorrect answer. Please try again.');
+                        attempt = true;
                     }
                 } else {
                     alert('No answer inputted.');
@@ -195,17 +217,47 @@
             // Function to show the question based on the current question index
             function showQuestion(questionIndex) {
                 const questions = document.querySelectorAll('.quiz-question');
-                questions.forEach((question, index) => {
-                    if (index === questionIndex) {
-                        question.style.display = 'block';
-                    } else {
-                        question.style.display = 'none';
-                    }
-                });
+                attempt = false;
+                
+                if (questionIndex < questions.length) {
+                    questions.forEach((question, index) => {
+                        if (index === questionIndex) {
+                            question.style.display = 'block';
+                        } else {
+                            question.style.display = 'none';
+                        }
+                    });
+                } else {
+                    endQuiz();
+                }
+            }
+            
+            function endQuiz() {
+                document.getElementById('quiz-container').style.display = 'none';
+                document.getElementById('end-page').style.display = 'block';
+                const percentageScore = ((score/questions.length)*100).toFixed(2);
+                document.getElementById('score').innerText = score + '/' + questions.length + '(' + percentageScore + '%)';
+
+
+                const endPageElement = document.getElementById('end-page');
+                endPageElement.classList.remove('full-mark', 'high-mark', 'mid-mark', 'low-mark');
+
+                if (percentageScore === 100) {
+                    endPageElement.classList.add('full-mark');
+                } else if (percentageScore >= 75) {
+                    endPageElement.classList.add('high-mark');
+                } else if (percentageScore >= 50) {
+                    endPageElement.classList.add('mid-mark');
+                } else {
+                    endPageElement.classList.add('low-mark');
+                }
             }
 
+            
 
-                
+            function restartQuiz() {
+                window.location.reload();
+            }    
 
             
         </script>

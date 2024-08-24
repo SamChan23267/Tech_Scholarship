@@ -206,3 +206,91 @@ body {
 }
 
 
+
+
+/* Styles for the end-page section */
+#end-page {
+    text-align: center;
+    padding: 20px;
+    border-radius: 8px;
+    margin-top: 20px;
+}
+
+#end-page.full-mark {
+    border: 1px solid #00796b;
+    background-color: #e0f7fa;
+}
+#end-page.high-mark {
+    border: 1px solid #0288d1;
+    background-color: #bbdefb;
+}
+#end-page.mid-mark {
+    border: 1px solid #ffeb3b;
+    background-color: #fff9c4;
+}
+#end-page.low-mark {
+    border: 1px solid #d32f2f;
+    background-color: #ffcdd2;
+    
+}
+
+#end-page h2 {
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+
+#end-page p {
+    font-size: 18px;
+}
+
+#end-page.full-mark h2 {
+    color: #00796b;
+}
+
+#end-page.full-mark p {
+    color: #004d40;
+}
+
+#end-page.high-mark h2 {
+    color: #0288d1;
+}
+
+#end-page.high-mark p {
+    color: #00796b;
+}
+
+#end-page.mid-mark h2 {
+    color: #ffeb3b;
+}
+
+#end-page.mid-mark p {
+    color: #ff9800;
+}
+
+#end-page.low-mark h2 {
+    color: #d32f2f;
+}
+
+#end-page.low-mark p {
+    color: #b71c1c;
+}
+
+#end-page #score {
+    font-weight: bold;
+    color: black;
+}
+
+#end-page button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+#end-page button:hover {
+    background-color: #0056b3;
+}
