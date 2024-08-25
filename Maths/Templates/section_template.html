@@ -69,12 +69,14 @@
                                                     </li>
                                                 {% endfor %}
                                             </ul>
+                                            <div id="feedback-{{ question_id }}" class="feedback" style="display:none;"></div>
                                             <button id="submit-btn-{{ question_id }}" onclick="checkMultipleChoiceAnswer('{{ question_id }}')">Submit</button>
                                         </div>
                                     {% elif question.type == 'open_ended' %}
                                         <div class="quiz-question" style="display:none;">
                                             <p>{{ question.question }}</p>
                                             <textarea name="question_{{ question_id }}" rows="1" cols="10"></textarea>
+                                            <div id="feedback-{{ question_id }}" class="feedback" style="display:none;"></div>
                                             <button id="submit-btn-{{ question_id }}" onclick="checkOpenEndedAnswer('{{ question_id }}')">Submit</button>
                                         </div>
                                     {% elif question.type == 'coordinate_plane' %}
@@ -140,7 +142,7 @@
             let currentQuestionIndex = 0;
             let score = 0;
             const questions = document.querySelectorAll('.quiz-question');
-            let attempt = false;
+            let attempt = 0;
           
             // Function to start the quiz
             function startQuiz() {
@@ -165,7 +167,7 @@
                         currentQuestionIdElement.value = currentQuestionIndex;
                         
                         // Add score if the question is answered correctly in first attempt
-                        if (attempt == false) {
+                        if (attempt == 0) {
                             score ++;
                         }
 
@@ -176,15 +178,30 @@
                             showQuestion(currentQuestionIndex);
                         }
 
+                        let feedbackDiv = document.getElementById('feedback-' + questionId);
+                        feedbackDiv.style.display = 'block';
+                        feedbackDiv.className = 'feedback correct';
+                        feedbackDiv.innerText = 'Correct answer!';
                         
 
                     } else {
                         // Logic for incorrect answer
-                        alert('Incorrect answer. Please try again.');
-                        attempt = true;
+                        let feedbackDiv = document.getElementById('feedback-' + questionId);
+                        feedbackDiv.style.display = 'block';
+                        attempt ++;
+                        if (attempt == 1) {
+                            feedbackDiv.innerText = 'Incorrect answer. Please try again. ';
+                        } else {
+                            var explanation = JSON.parse('{{ sub_section_content.questions|tojson }}')[questionId].explanation;
+                            feedbackDiv.innerText = 'Incorrect answer. ' + explanation;
+                        }
+                        feedbackDiv.className = 'feedback incorrect';
                     }
                 } else {
-                    alert('No option selected.');
+                    let feedbackDiv = document.getElementById('feedback-' + questionId);   
+                    feedbackDiv.style.display = 'block';
+                    feedbackDiv.className = 'feedback incorrect';
+                    feedbackDiv.innerText = 'Please select an option. ';
                 }
             }
             
@@ -194,7 +211,7 @@
                 if (userAnswer) {
                     var correctAnswer = JSON.parse('{{ sub_section_content.questions|tojson }}')[questionId].answer
                     if (correctAnswer.includes(userAnswer)) {
-                        alert('Correct answer! Moving to the next question.');
+                        alert('Correct answer! Moving to the next question. ');
 
                         // Update the current question index
                         const currentQuestionIdElement = document.getElementById('current_question_id');
@@ -203,7 +220,7 @@
                         currentQuestionIdElement.value = currentQuestionIndex;
 
                         // Add score if the question is answered correctly in first attempt
-                        if (attempt == false) {
+                        if (attempt == 0) {
                             score ++;
                         }
 
@@ -213,21 +230,37 @@
                             // Logic to move to the next question
                             showQuestion(currentQuestionIndex);
                         }
+
+                        let feedbackDiv = document.getElementById('feedback-' + questionId);
+                        feedbackDiv.style.display = 'block';
+                        feedbackDiv.className = 'feedback correct';
+                        feedbackDiv.innerText = 'Correct answer!';
                         
                     } else {
                         // Logic for incorrect answer
-                        alert('Incorrect answer. Please try again.');
-                        attempt = true;
+                        let feedbackDiv = document.getElementById('feedback-' + questionId);
+                        feedbackDiv.style.display = 'block';
+                        attempt ++;
+                        if (attempt == 1) {
+                            feedbackDiv.innerText = 'Incorrect answer. Please try again. ';
+                        } else {
+                            var explanation = JSON.parse('{{ sub_section_content.questions|tojson }}')[questionId].explanation;
+                            feedbackDiv.innerText = 'Incorrect answer. ' + explanation;
+                        }
+                        feedbackDiv. className = 'feedback incorrect';
                     }
                 } else {
-                    alert('No answer inputted.');
+                    let feedbackDiv = document.getElementById('feedback-' + questionId);
+                    feedbackDiv.style.display = 'block';
+                    feedbackDiv.innerText = 'Please input an answer. ';
+                    feedbackDiv.className = 'feedback incorrect';
                 }
             }
         
             // Function to show the question based on the current question index
             function showQuestion(questionIndex) {
                 const questions = document.querySelectorAll('.quiz-question');
-                attempt = false;
+                attempt = 0;
                 
                 if (questionIndex < questions.length) {
                     questions.forEach((question, index) => {
@@ -278,7 +311,7 @@
                     if (data.success) {
                         alert('Score updated successfully!');
                     } else {
-                        alert('Failed to update score.');
+                        alert('Failed to update score. ');
                     }
                 })
                 .catch(error => {

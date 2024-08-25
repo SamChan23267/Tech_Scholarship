@@ -218,6 +218,34 @@ body {
 
 
 
+/* Styles for the feedback section */
+.feedback {
+    margin-top: 30px;
+    padding: 20px;
+    border-radius: 5px;
+    font-size: 14px;
+    max-width: 300px;
+    float: right;
+}
+
+.feedback.correct {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.feedback.incorrect {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+
+
+
+
+
+
 /* Styles for the end-page section */
 #end-page {
     text-align: center;
@@ -247,39 +275,28 @@ body {
 #end-page h2 {
     font-size: 24px;
     margin-bottom: 10px;
+    color: black;
 }
 
 #end-page p {
     font-size: 18px;
 }
 
-#end-page.full-mark h2 {
-    color: #00796b;
-}
 
 #end-page.full-mark p {
     color: #004d40;
 }
 
-#end-page.high-mark h2 {
-    color: #0288d1;
-}
 
 #end-page.high-mark p {
     color: #00796b;
 }
 
-#end-page.mid-mark h2 {
-    color: #ffeb3b;
-}
 
 #end-page.mid-mark p {
     color: #ff9800;
 }
 
-#end-page.low-mark h2 {
-    color: #d32f2f;
-}
 
 #end-page.low-mark p {
     color: #b71c1c;
@@ -304,3 +321,7 @@ body {
 #end-page button:hover {
     background-color: #0056b3;
 }
+
+
+
+
