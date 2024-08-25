@@ -69,13 +69,13 @@
                                                     </li>
                                                 {% endfor %}
                                             </ul>
-                                            <button onclick="checkMultipleChoiceAnswer('{{ question_id }}')">Submit</button>
+                                            <button id="submit-btn-{{ question_id }}" onclick="checkMultipleChoiceAnswer('{{ question_id }}')">Submit</button>
                                         </div>
                                     {% elif question.type == 'open_ended' %}
                                         <div class="quiz-question" style="display:none;">
                                             <p>{{ question.question }}</p>
-                                            <textarea name="question_{{ question_id }}" rows="4" cols="50"></textarea>
-                                            <button onclick="checkOpenEndedAnswer('{{ question_id }}')">Submit</button>
+                                            <textarea name="question_{{ question_id }}" rows="1" cols="10"></textarea>
+                                            <button id="submit-btn-{{ question_id }}" onclick="checkOpenEndedAnswer('{{ question_id }}')">Submit</button>
                                         </div>
                                     {% elif question.type == 'coordinate_plane' %}
                                         <!-- Add coordinate plane question rendering logic here -->
@@ -156,7 +156,7 @@
                     const selectedOption = JSON.stringify(selectedOptionElement.value);
                     const correctAnswer = JSON.stringify(JSON.parse('{{ sub_section_content.questions|tojson }}')[questionId].answer);
                     if (selectedOption === correctAnswer) {
-                        alert('Correct answer! Moving to the next question.');
+                        
 
                         // Update the current question index
                         const currentQuestionIdElement = document.getElementById('current_question_id');
@@ -169,8 +169,14 @@
                             score ++;
                         }
 
-                        // Logic to move to the next question
-                        showQuestion(currentQuestionIndex);
+                        const submitBtn = document.getElementById('submit-btn-' + questionId);
+                        submitBtn.innerText = 'Next Question';
+                        submitBtn.onclick = function() {
+                            // Logic to move to the next question
+                            showQuestion(currentQuestionIndex);
+                        }
+
+                        
 
                     } else {
                         // Logic for incorrect answer
@@ -201,8 +207,12 @@
                             score ++;
                         }
 
-                        // Logic to move to the next question
-                        showQuestion(currentQuestionIndex);
+                        const submitBtn = document.getElementById('submit-btn-' + questionId);
+                        submitBtn.innerText = 'Next Question';
+                        submitBtn.onclick = function() {
+                            // Logic to move to the next question
+                            showQuestion(currentQuestionIndex);
+                        }
                         
                     } else {
                         // Logic for incorrect answer

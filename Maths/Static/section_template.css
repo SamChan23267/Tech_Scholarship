@@ -142,11 +142,13 @@ body {
     border: 1px solid #ccc;
     border-radius: 8px;
     background-color: #f9f9f9;
+    position: relative;
 }
 
 /* Styles for each quiz question */
 .quiz-question {
     margin-bottom: 20px;
+    padding-bottom: 120px;
 }
 
 /* Styles for the question text */
@@ -174,14 +176,21 @@ body {
 
 /* Styles for the submit button */
 .quiz-question button {
-    padding: 10px 20px;
+    padding: 5px 10px;
     font-size: 16px;
     color: #fff;
     background-color: #007bff;
+    bottom: 10px;
+    right: 20px;
+    position: absolute;
     border: none;
     border-radius: 4px;
     cursor: pointer;
+    float: right;
     display: block;
+    width: 100px;
+    height: 45px;
+    text-align: center;
 }
 
 /* Hover effect for the submit button */
@@ -196,7 +205,8 @@ body {
 /* Styles for open ended question */
 
 .quiz-question textarea {
-    width: 100%;
+    width: 40%;
+    max-width: 100%;
     padding: 10px;
     margin: 10px 0;
     border: 1px solid #ccc;
