@@ -228,11 +228,11 @@
                         }
                     });
                 } else {
-                    endQuiz();
+                    endQuiz('{{ sub_section_id }}');
                 }
             }
             
-            function endQuiz() {
+            function endQuiz(subSectionId) {
                 document.getElementById('quiz-container').style.display = 'none';
                 document.getElementById('end-page').style.display = 'block';
                 const percentageScore = ((score/questions.length)*100).toFixed(2);
@@ -251,7 +251,32 @@
                 } else {
                     endPageElement.classList.add('low-mark');
                 }
+                
+                        // Send the score to the server
+                fetch('/update_score', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        sub_section_id: subSectionId,
+                        score: score
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Score updated successfully!');
+                    } else {
+                        alert('Failed to update score.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                });
             }
+                
+            
 
             
 

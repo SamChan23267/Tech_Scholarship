@@ -56,7 +56,7 @@ def delete_user(email):
 
 sample_scores = {
         5: {  # user_id 1
-            '2': 10,  # sub_section_id 10
+
         }
     }
 for user_id, scores in sample_scores.items():
