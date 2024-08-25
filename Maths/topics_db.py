@@ -163,11 +163,13 @@ def insert_section(unit_id, name, display_name, content=None):
     conn_topics.commit()
     conn_topics.close()
 
-def insert_sub_section(section_id, type, name, display_name, maximum_score, content=None):
+
+
+def insert_sub_section(section_id, type, name, display_name, content=None):
     conn_topics = sqlite3.connect('topics.db')
     cursor_topics = conn_topics.cursor()
-    cursor_topics.execute('INSERT INTO sub_sections (section_id, type, name, display_name, maximum_score, content) VALUES (?, ?, ?, ?, ?, ?)', 
-                   (section_id, type, name, display_name, maximum_score, content))
+    cursor_topics.execute('INSERT INTO sub_sections (section_id, type, name, display_name, content) VALUES (?, ?, ?, ?, ?)', 
+                   (section_id, type, name, display_name, content))
     conn_topics.commit()
     conn_topics.close()
 
@@ -324,11 +326,15 @@ if __name__ == '__main__':
     '''
 
     
-    cursor_topics.execute('''
-        UPDATE sub_sections
-        SET content = ?
-        WHERE id = 1
-    ''', (json.dumps(sample_notes),))
+    #cursor_topics.execute('''
+    #    UPDATE sub_sections
+    #    SET content = ?
+    #    WHERE id = 1
+    #''', (json.dumps(sample_notes),))
+
+
+
+    
 
     conn_topics.commit()
     conn_topics.close()

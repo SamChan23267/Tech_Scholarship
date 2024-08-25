@@ -348,12 +348,13 @@ def topic_detail(level, topic_name):
     total_points = 0
     total_maximum_points = 0
 
+
     for unit in units:
         unit_points = 0
         unit_maximum_points = 0
         for section in unit['sections']:
             section_points = sum(user_scores.get(str(sub_section['id']), 0) for sub_section in section['sub_sections'])
-            section_maximum_points = sum(sub_section['maximum_score'] for sub_section in section['sub_sections'])
+            section_maximum_points = sum(json.loads(sub_section['content']).get('no. of questions', 0) if sub_section['type'] == 'practice' else 0 for sub_section in section['sub_sections'])
             section['score'] = section_points
             section['maximum_score'] = section_maximum_points
             unit_points += section_points
@@ -429,14 +430,12 @@ def unit_detail(level, topic_name, unit_name):
             section['sub_sections'] = [dict(sub_section) for sub_section in sub_sections]
 
     # Calculate unit score and maximum score
-    unit_points = 0
-    unit_maximum_points = 0
     for unit in unit_dict:
         unit_points = 0
         unit_maximum_points = 0
         for section in unit['sections']:
             section_points = sum(user_scores.get(str(sub_section['id']), 0) for sub_section in section['sub_sections'])
-            section_maximum_points = sum(sub_section['maximum_score'] for sub_section in section['sub_sections'])
+            section_maximum_points = sum(json.loads(sub_section['content']).get('no. of questions', 0) if sub_section['type'] == 'practice' else 0 for sub_section in section['sub_sections'])
             section['score'] = section_points
             section['maximum_score'] = section_maximum_points
             unit_points += section_points
@@ -524,10 +523,11 @@ def section_detail(level, topic_name, unit_name, section_name):
 
     # Calculate section score and maximum score
     section_points = sum(user_scores.get(str(sub_section['id']), 0) for sub_section in sub_sections)
-    section_maximum_points = sum(sub_section['maximum_score'] for sub_section in sub_sections)
+    section_maximum_points = sum(json.loads(sub_section['content']).get('no. of questions', 0) if sub_section['type'] == 'practice' else 0 for sub_section in sub_sections)
     section['score'] = section_points
     section['maximum_score'] = section_maximum_points
     section_display_name=section['display_name']
+    print(section['maximum_score'])
 
     # Ensure progress is a number between 0 and 100
     section['progress'] = (section['score'] / section['maximum_score']) * 100 if section['maximum_score'] > 0 else 0
@@ -607,7 +607,7 @@ def sub_section_detail(level, topic_name, unit_name, section_name, sub_section_n
     
     # Calculate sub-section score and maximum score
     sub_section_score = user_scores.get(str(sub_section['id']), 0)
-    sub_section_maximum_score = sub_section['maximum_score']
+    sub_section_maximum_score = sub_section_content.get('no. of questions', 0) if sub_section_type == 'practice' else 0
 
     sub_section_id = sub_section['id']
 

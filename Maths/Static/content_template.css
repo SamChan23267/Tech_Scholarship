@@ -9,11 +9,11 @@ body {
 }
 
 .left-section {
-    width: 30%;
+    width: 30% !important;
 }
 
 .right-section {
-    width: 70%;
+    width: 70% !important;
 }
 
 header {
