@@ -55,6 +55,150 @@
                                 <button onclick="startQuiz()">Start Quiz</button>
                             </div>
 
+                            <!-- Calculator Button -->
+                            {% if calculator %}
+                                <button onclick="toggleCalculator()">Show Calculator</button>
+                                <div id="calculator" class="calculator" style="display:none;">
+                                    <div class="calculator-header">
+                                        <span>Calculator</span>
+                                        <button onclick="toggleCalculator()">X</button>
+                                    </div>
+                                    <!-- Simple Calculator HTML -->
+                                    <input type="text" id="calc-display" readonly>
+                                    <div>
+                                        <button onclick="calcInput('1')"> 1 </button>
+                                        <button onclick="calcInput('2')"> 2 </button>
+                                        <button onclick="calcInput('3')"> 3 </button>
+                                        <button onclick="calcInput('+')"> + </button>
+                                        <button onclick="calcInput('-')"> - </button>
+                                    </div>
+                                    <div>
+                                        <button onclick="calcInput('4')"> 4 </button>
+                                        <button onclick="calcInput('5')"> 5 </button>
+                                        <button onclick="calcInput('6')"> 6 </button>
+                                        <button onclick="calcInput('*')"> x </button>
+                                        <button onclick="calcInput('/')"> / </button>
+                                    </div>
+                                    <div>
+                                        <button onclick="calcInput('7')"> 7 </button>
+                                        <button onclick="calcInput('8')"> 8 </button>
+                                        <button onclick="calcInput('9')"> 9 </button>
+                                        <button onclick="calcInput('(')"> ( </button>
+                                        <button onclick="calcInput(')')"> ) </button>
+                                    </div>
+                                    <div>
+                                        <button onclick="calcInput('0')"> 0 </button>
+                                        <button onclick="calcInput('.')"> . </button>
+                                        <button onclick="calcClear()"> C </button>
+                                        <button onclick="calcCalculate()"> = </button>
+                                        <button onclick="calcAns()"> Ans </button>
+                                    </div>
+                                </div>
+
+                                <script>
+                                    let lastInputWasEqual = false;
+                                    let lastAnswer = '';
+
+                                    function toggleCalculator() {
+                                        var calculator = document.getElementById('calculator');
+                                        if (calculator.style.display === 'none') {
+                                            calculator.style.display = 'block';
+                                        } else {
+                                            calculator.style.display = 'none';
+                                        }
+                                    }
+                    
+                                    function calcInput(value) {
+                                        var display = document.getElementById('calc-display');
+                                        if (lastInputWasEqual) {
+                                            if (!isNaN(value) || display.value === 'Error' || display.value === 'NaN' || display.value === 'Infinity') {
+                                                display.value = '';
+                                            }
+                                            lastInputWasEqual = false;
+                                        }
+                                        display.value += value;
+                                    }
+                    
+                                    function calcClear() {
+                                        var display = document.getElementById('calc-display');
+                                        display.value = '';
+                                    }
+                    
+                                    function calcCalculate() {
+                                        var display = document.getElementById('calc-display');
+                                        try {
+                                            let result = eval(display.value);
+                                            if (isFinite(result) && !isNaN(result)) {
+                                                lastAnswer = result;
+                                            } else {
+                                                result = 'Error';
+                                            }
+                                            display.value = result;
+                                        } catch (e) {
+                                            display.value = 'Error';
+                                        }
+                                        lastInputWasEqual = true;
+                                    }
+
+                                    function calcAns() {
+                                        var display = document.getElementById('calc-display');
+                                        if (lastInputWasEqual) {
+                                            display.value = '';
+                                            lastInputWasEqual = false;
+                                        }
+                                        display.value += lastAnswer;
+                                    }
+
+                                    // Make the calculator draggable
+                                    dragElement(document.getElementById("calculator"));
+
+                                    function dragElement(elmnt) {
+                                        var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+                                        if (document.getElementsByClassName("calculator-header")[0]) {
+                                            // if present, the header is where you move the DIV from:
+                                            document.getElementsByClassName("calculator-header")[0].onmousedown = dragMouseDown;
+                                        } else {
+                                            // otherwise, move the DIV from anywhere inside the DIV:
+                                            elmnt.onmousedown = dragMouseDown;
+                                        }
+
+                                        function dragMouseDown(e) {
+                                            e = e || window.event;
+                                            e.preventDefault();
+                                            // get the mouse cursor position at startup:
+                                            pos3 = e.clientX;
+                                            pos4 = e.clientY;
+                                            document.onmouseup = closeDragElement;
+                                            // call a function whenever the cursor moves:
+                                            document.onmousemove = elementDrag;
+                                        }
+
+                                        function elementDrag(e) {
+                                            e = e || window.event;
+                                            e.preventDefault();
+                                            // calculate the new cursor position:
+                                            pos1 = pos3 - e.clientX;
+                                            pos2 = pos4 - e.clientY;
+                                            pos3 = e.clientX;
+                                            pos4 = e.clientY;
+                                            // set the element's new position:
+                                            elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+                                            elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+                                        }
+
+                                        function closeDragElement() {
+                                            // stop moving when mouse button is released:
+                                            document.onmouseup = null;
+                                            document.onmousemove = null;
+                                        }
+                                    }
+
+
+                    
+                                </script>
+                    
+                            {% endif %}
+
                             <!-- Quiz Container -->
                             <div id="quiz-container" style="display:none;">
                                 {% for question_id, question in sub_section_content.questions.items() %}
@@ -333,6 +477,8 @@
         {% endif %}
 
         {% endif %}
+
+
 </body>
 </html>
 

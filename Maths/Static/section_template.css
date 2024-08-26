@@ -131,6 +131,71 @@ body {
 
 
 
+
+/* Styles for the calculator */
+.calculator {
+    position: absolute;
+    width: 240px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    background-color: #fff;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+}
+
+.calculator-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: move;
+    background-color: #f1f1f1;
+    padding: 5px;
+    border-bottom: 1px solid #ccc;
+}
+
+.calculator-header button {
+    background-color: #f44336;
+    color: white;
+    border: none;
+    padding: 5px;
+    cursor: pointer;
+}
+
+.calculator-header button:hover {
+    background-color: #d32f2f;
+}
+
+.calculator input {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    font-size: 16px;
+    text-align: left;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.calculator button {
+    width: 30px;
+    height: 30px;
+    margin: 2px;
+    font-size: 16px;
+    cursor: pointer;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+.calculator button:hover {
+    background-color: #ddd;
+}
+
+
+
+
+
+
+
+
 /* Styles for the multiple choice question */
 
 
