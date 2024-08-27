@@ -76,7 +76,7 @@
                                         <button onclick="calcInput('4')"> 4 </button>
                                         <button onclick="calcInput('5')"> 5 </button>
                                         <button onclick="calcInput('6')"> 6 </button>
-                                        <button onclick="calcInput('*')"> x </button>
+                                        <button onclick="calcInput('x')"> x </button>
                                         <button onclick="calcInput('/')"> / </button>
                                     </div>
                                     <div>
@@ -92,6 +92,7 @@
                                         <button onclick="calcClear()"> C </button>
                                         <button onclick="calcCalculate()"> = </button>
                                         <button onclick="calcAns()"> Ans </button>
+                                        <button onclick="calcDelete()"> Del </button>
                                     </div>
                                     <div>
                                         <button onclick="calcInput('sin(')"> sin </button>
@@ -141,20 +142,34 @@
                     
                                     function calcCalculate() {
                                         var display = document.getElementById('calc-display');
-                                        try {
-                                            let expression = display.value
+                                        let expression = display.value
+                                        // List of functions to check for
+                                        var functions = ['sin', 'cos', 'tan', 'log', 'ln', 'e^', '√'];
+
+                                        // Insert multiplication symbol where necessary
+                                        for (var i = 0; i < functions.length; i++) {
+                                            var func = functions[i];
+                                            var regex = new RegExp('(\\d+)' + func + '\\(', 'g');
+                                            expression = expression.replace(regex, '$1*' + func + '(');
+                                        }
+
+                                        // Insert multiplication symbol before opening parenthesis if preceded by a number or closing parenthesis
+                                        expression = expression.replace(/(\d+|\))\(/g, '$1*(')
+                                                .replace(/(\d+)e\^\(/g, '$1*Math.exp(')
+                                                .replace(/x/g, '*')
                                                 .replace(/sin\(/g, 'Math.sin(')
                                                 .replace(/cos\(/g, 'Math.cos(')
                                                 .replace(/tan\(/g, 'Math.tan(')
                                                 .replace(/log\(/g, 'Math.log10(')
                                                 .replace(/ln\(/g, 'Math.log(')
-                                                .replace(/e\^/g, 'Math.exp')
+                                                .replace(/e\^\(/g, 'Math.exp(')
                                                 .replace(/√\(/g, 'Math.sqrt(')
                                                 .replace(/π/g, 'Math.PI')
                                                 .replace(/(\d+)!/g, 'factorial($1)')
                                                 .replace(/(\d+)\^(\d+)/g, 'Math.pow($1,$2)');
                                             console.log(expression);
 
+                                        try {                                    
                                             let result = eval(expression);
                                             if (isFinite(result) && !isNaN(result)) {
                                                 lastAnswer = result;
@@ -180,6 +195,25 @@
                                             lastInputWasEqual = false;
                                         }
                                         display.value += lastAnswer;
+                                    }
+
+                                    function calcDelete() {
+                                        var display = document.getElementById('calc-display');
+                                        var currentValue = display.value;
+
+                                        // List of functions to check for
+                                        var functions = ['sin', 'cos', 'tan', 'log', 'ln', 'e^'];
+
+                                        // Check if the current value ends with any of the functions
+                                        for (var i = 0; i < functions.length; i++) {
+                                            if (currentValue.endsWith(functions[i])) {
+                                                display.value = currentValue.slice(0, -functions[i].length);
+                                                return;
+                                            }
+                                        }
+
+                                        // Default behavior: delete the last character
+                                        display.value = currentValue.slice(0, -1);
                                     }
 
                                     // Make the calculator draggable
