@@ -93,7 +93,22 @@
                                         <button onclick="calcCalculate()"> = </button>
                                         <button onclick="calcAns()"> Ans </button>
                                     </div>
+                                    <div>
+                                        <button onclick="calcInput('sin(')"> sin </button>
+                                        <button onclick="calcInput('cos(')"> cos </button>
+                                        <button onclick="calcInput('tan(')"> tan </button>
+                                        <button onclick="calcInput('log(')"> log </button>
+                                        <button onclick="calcInput('ln(')"> ln </button>
+                                        <button onclick="calcInput('e^(')"> e^x </button>
+                                        <button onclick="calcInput('^')"> x^y </button>
+                                    </div>
+                                    <div>
+                                        <button onclick="calcInput('√(')"> √ </button>
+                                        <button onclick="calcInput('!')"> ! </button>
+                                        <button onclick="calcInput('π')"> π </button>
+                                    </div>
                                 </div>
+
 
                                 <script>
                                     let lastInputWasEqual = false;
@@ -127,7 +142,20 @@
                                     function calcCalculate() {
                                         var display = document.getElementById('calc-display');
                                         try {
-                                            let result = eval(display.value);
+                                            let expression = display.value
+                                                .replace(/sin\(/g, 'Math.sin(')
+                                                .replace(/cos\(/g, 'Math.cos(')
+                                                .replace(/tan\(/g, 'Math.tan(')
+                                                .replace(/log\(/g, 'Math.log10(')
+                                                .replace(/ln\(/g, 'Math.log(')
+                                                .replace(/e\^/g, 'Math.exp')
+                                                .replace(/√\(/g, 'Math.sqrt(')
+                                                .replace(/π/g, 'Math.PI')
+                                                .replace(/(\d+)!/g, 'factorial($1)')
+                                                .replace(/(\d+)\^(\d+)/g, 'Math.pow($1,$2)');
+                                            console.log(expression);
+
+                                            let result = eval(expression);
                                             if (isFinite(result) && !isNaN(result)) {
                                                 lastAnswer = result;
                                             } else {
@@ -138,6 +166,11 @@
                                             display.value = 'Error';
                                         }
                                         lastInputWasEqual = true;
+                                    }
+
+                                    function factorial(n) {
+                                        if (n === 0 || n === 1) return 1;
+                                        return n * factorial(n - 1);
                                     }
 
                                     function calcAns() {
@@ -221,7 +254,7 @@
                                             <p>{{ question.question }}</p>
                                             <textarea name="question_{{ question_id }}" rows="1" cols="10"></textarea>
                                             <div id="feedback-{{ question_id }}" class="feedback" style="display:none;"></div>
-                                            <button id="submit-btn-{{ question_id }}" onclick="checkOpenEndedAnswer('{{ question_id }}')">Submit</button>
+                                            <but√ton id="submit-btn-{{ question_id }}" onclick="checkOpenEndedAnswer('{{ question_id }}')">Submit</button>
                                         </div>
                                     {% elif question.type == 'coordinate_plane' %}
                                         <!-- Add coordinate plane question rendering logic here -->
