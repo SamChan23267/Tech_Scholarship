@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='section_template.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
 <body>
 
@@ -57,7 +58,7 @@
 
                             <!-- Calculator Button -->
                             {% if calculator %}
-                                <button onclick="toggleCalculator()">Show Calculator</button>
+                                <button onclick="toggleCalculator()"><i class="material-icons">calculate</i></button>
                                 <div id="calculator" class="calculator" style="display:none;">
                                     <div class="calculator-header">
                                         <span>Calculator</span>
@@ -71,6 +72,8 @@
                                         <button onclick="calcInput('3')"> 3 </button>
                                         <button onclick="calcInput('+')"> + </button>
                                         <button onclick="calcInput('-')"> - </button>
+                                        <button onclick="calcClear()"> C </button>
+                                        
                                     </div>
                                     <div>
                                         <button onclick="calcInput('4')"> 4 </button>
@@ -78,35 +81,38 @@
                                         <button onclick="calcInput('6')"> 6 </button>
                                         <button onclick="calcInput('x')"> x </button>
                                         <button onclick="calcInput('/')"> / </button>
+                                        <button onclick="calcInput('(')"> ( </button>
+                                        
                                     </div>
                                     <div>
                                         <button onclick="calcInput('7')"> 7 </button>
                                         <button onclick="calcInput('8')"> 8 </button>
                                         <button onclick="calcInput('9')"> 9 </button>
-                                        <button onclick="calcInput('(')"> ( </button>
+                                        <button onclick="calcInput('log(')"> log </button>
+                                        <button onclick="calcInput('ln(')"> ln </button>
                                         <button onclick="calcInput(')')"> ) </button>
+                                        
                                     </div>
                                     <div>
                                         <button onclick="calcInput('0')"> 0 </button>
                                         <button onclick="calcInput('.')"> . </button>
-                                        <button onclick="calcClear()"> C </button>
-                                        <button onclick="calcCalculate()"> = </button>
-                                        <button onclick="calcAns()"> Ans </button>
-                                        <button onclick="calcDelete()"> Del </button>
-                                    </div>
-                                    <div>
                                         <button onclick="calcInput('sin(')"> sin </button>
                                         <button onclick="calcInput('cos(')"> cos </button>
                                         <button onclick="calcInput('tan(')"> tan </button>
-                                        <button onclick="calcInput('log(')"> log </button>
-                                        <button onclick="calcInput('ln(')"> ln </button>
-                                        <button onclick="calcInput('e^(')"> e^x </button>
-                                        <button onclick="calcInput('^')"> x^y </button>
+                                        <button onclick="calcInput('π')"> π </button>
+                                        
+                                        
                                     </div>
                                     <div>
                                         <button onclick="calcInput('√(')"> √ </button>
                                         <button onclick="calcInput('!')"> ! </button>
-                                        <button onclick="calcInput('π')"> π </button>
+                                        <button onclick="calcInput('e^(')"> e^x </button>
+                                        <button onclick="calcInput('^')"> x^y </button>
+                                    </div>
+                                    <div>
+                                        <button onclick="calcDelete()"> Del </button>
+                                        <button onclick="calcAns()"> Ans </button>
+                                        <button onclick="calcCalculate()"> = </button>
                                     </div>
                                 </div>
 
@@ -156,7 +162,15 @@
                                         // Insert multiplication symbol before opening parenthesis if preceded by a number or closing parenthesis
                                         expression = expression.replace(/(\d+|\))\(/g, '$1*(')
                                                 .replace(/(\d+)e\^\(/g, '$1*Math.exp(')
-                                                .replace(/x/g, '*')
+
+                                        // Insert multiplication symbol between closing parenthesis and functions
+                                        for (var i = 0; i < functions.length; i++) {
+                                            var func = functions[i];
+                                            var regex = new RegExp('\\)' + func + '\\(', 'g');
+                                            expression = expression.replace(regex, ')*' + func + '(');
+                                        }
+
+                                        expression = expression.replace(/x/g, '*')
                                                 .replace(/sin\(/g, 'Math.sin(')
                                                 .replace(/cos\(/g, 'Math.cos(')
                                                 .replace(/tan\(/g, 'Math.tan(')

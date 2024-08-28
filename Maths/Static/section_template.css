@@ -135,7 +135,7 @@ body {
 /* Styles for the calculator */
 .calculator {
     position: absolute;
-    width: 240px;
+    width: 250px;
     padding: 10px;
     border: 1px solid #ccc;
     background-color: #fff;
