@@ -79,7 +79,7 @@
                                         <button onclick="calcInput('4')"> 4 </button>
                                         <button onclick="calcInput('5')"> 5 </button>
                                         <button onclick="calcInput('6')"> 6 </button>
-                                        <button onclick="calcInput('x')"> x </button>
+                                        <button onclick="calcInput('*')"> x </button>
                                         <button onclick="calcInput('/')"> / </button>
                                         <button onclick="calcInput('(')"> ( </button>
                                         
@@ -162,6 +162,7 @@
                                         // Insert multiplication symbol before opening parenthesis if preceded by a number or closing parenthesis
                                         expression = expression.replace(/(\d+|\))\(/g, '$1*(')
                                                 .replace(/(\d+)e\^\(/g, '$1*Math.exp(')
+                                                .replace(/(\d+)π/g, '$1*Math.PI')
 
                                         // Insert multiplication symbol between closing parenthesis and functions
                                         for (var i = 0; i < functions.length; i++) {
@@ -170,10 +171,10 @@
                                             expression = expression.replace(regex, ')*' + func + '(');
                                         }
 
-                                        expression = expression.replace(/x/g, '*')
-                                                .replace(/sin\(/g, 'Math.sin(')
-                                                .replace(/cos\(/g, 'Math.cos(')
-                                                .replace(/tan\(/g, 'Math.tan(')
+                                        expression = expression.replace(/sin\(/g, 'customSin(')
+                                                
+                                                .replace(/cos\(/g, 'customCos(')
+                                                .replace(/tan\(/g, 'customTan(')
                                                 .replace(/log\(/g, 'Math.log10(')
                                                 .replace(/ln\(/g, 'Math.log(')
                                                 .replace(/e\^\(/g, 'Math.exp(')
@@ -186,6 +187,10 @@
 
                                         try {                                    
                                             let result = eval(expression);
+                                            if (/sin|cos|tan/.test(display.value)) {
+                                                result = roundTrigResult(result);
+                                            }
+                                            
                                             if (isFinite(result) && !isNaN(result)) {
                                                 lastAnswer = result;
                                             } else {
@@ -215,6 +220,49 @@
                                         }
                                         display.value += lastAnswer;
                                     }
+
+                                    
+                                    function customSin(x) {
+                                        const result = Math.sin(x);
+                                        if (Math.abs(result) < 1e-10) {
+                                            return 0;
+                                        } else if (Math.abs(result - 1) < 1e-10) {
+                                            return 1;
+                                        } else if (Math.abs(result + 1) < 1e-10) {
+                                            return -1;
+                                        }
+                                        return result;
+                                    }
+
+                                    function customCos(x) {
+                                        const result = Math.cos(x);
+                                        if (Math.abs(result) < 1e-10) {
+                                            return 0;
+                                        } else if (Math.abs(result - 1) < 1e-10) {
+                                            return 1;
+                                        } else if (Math.abs(result + 1) < 1e-10) {
+                                            return -1;
+                                        }  else if (Math.abs(x % Math.PI - Math.PI / 2) < 1e-15 || Math.abs(x % Math.PI + Math.PI / 2) < 1e-15) {
+                                            return Number.POSITIVE_INFINITY;
+                                        }
+                                        return result;
+                                    }
+
+                                    function customTan(x) {
+                                        const result = Math.tan(x);
+                                        if (Math.abs(result) < 1e-10) {
+                                            return 0;
+                                        } else if (Math.abs(result - 1) < 1e-10) {
+                                            return 1;
+                                        } else if (Math.abs(result + 1) < 1e-10) {
+                                            return -1;
+                                        } else if (Math.abs(x % Math.PI - Math.PI / 2) < 1e-10 || Math.abs(x % Math.PI + Math.PI / 2) < 1e-10) {
+                                            return Number.POSITIVE_INFINITY;
+                                        }
+                                        return result;
+                                    }
+
+
 
                                     function calcDelete() {
                                         var display = document.getElementById('calc-display');
