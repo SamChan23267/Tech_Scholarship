@@ -636,6 +636,7 @@ def update_score():
         return jsonify({'success': False, 'message': 'Invalid data'}), 400
 
     update_user_score(user_id, sub_section_id, score)
+    return jsonify({'success': True})
 
 
 
