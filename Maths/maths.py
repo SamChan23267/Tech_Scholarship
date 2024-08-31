@@ -618,6 +618,8 @@ def sub_section_detail(level, topic_name, unit_name, section_name, sub_section_n
         selected_questions = dict(random.sample(list(questions.items()), min(no_of_questions, len(questions))))
         sub_section_content['questions'] = selected_questions
         calculator = sub_section_content.get('calculator', False)
+    else:
+        calculator = False
 
     conn_topics.close()
     return render_template('section_template.html', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name, sub_section_name=sub_section_name, sub_section_content=sub_section_content, sub_section_type=sub_section_type, section_display_name=section_display_name, sub_section_display_name=sub_section_display_name, title=title, sub_section_score=sub_section_score, sub_section_maximum_score=sub_section_maximum_score, sub_sections=sub_sections_list, sub_section_id=sub_section_id, calculator=calculator, is_section=False)
@@ -635,6 +637,7 @@ def update_score():
 
     update_user_score(user_id, sub_section_id, score)
     return jsonify({'success': True})
+
 
 
 

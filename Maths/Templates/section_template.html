@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ title }}</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='section_template.css') }}">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 </head>
 <body>
 
@@ -55,6 +56,7 @@
                                 <button onclick="startQuiz()">Start Quiz</button>
                             </div>
 
+                            
                             <!-- Quiz Container -->
                             <div id="quiz-container" style="display:none;">
                                 {% for question_id, question in sub_section_content.questions.items() %}
@@ -86,7 +88,288 @@
                                     {% endif %}
                                 {% endfor %}
                                 <input type="hidden" id="current_question_id" value="0">
+                                <!-- Calculator Button -->
+                                {% if calculator %}
+                                <button onclick="toggleCalculator()"><i class="material-icons">calculate</i></button>
+                                {% endif %}
                             </div>
+                            
+                            <!-- Calculator -->
+                            {% if calculator %}
+                            <div id="calculator" class="calculator" style="display:none;">
+                                <div class="calculator-header">
+                                    <span>Calculator</span>
+                                    <button onclick="toggleCalculator()">X</button>
+                                </div>
+                                <!-- Simple Calculator HTML -->
+                                <input type="text" id="calc-display" readonly>
+                                <div>
+                                    <button onclick="calcInput('1')"> 1 </button>
+                                    <button onclick="calcInput('2')"> 2 </button>
+                                    <button onclick="calcInput('3')"> 3 </button>
+                                    <button onclick="calcInput('+')"> + </button>
+                                    <button onclick="calcInput('-')"> - </button>
+                                    <button onclick="calcClear()"> C </button>
+                                    
+                                </div>
+                                <div>
+                                    <button onclick="calcInput('4')"> 4 </button>
+                                    <button onclick="calcInput('5')"> 5 </button>
+                                    <button onclick="calcInput('6')"> 6 </button>
+                                    <button onclick="calcInput('*')"> x </button>
+                                    <button onclick="calcInput('/')"> / </button>
+                                    <button onclick="calcInput('(')"> ( </button>
+                                    
+                                </div>
+                                <div>
+                                    <button onclick="calcInput('7')"> 7 </button>
+                                    <button onclick="calcInput('8')"> 8 </button>
+                                    <button onclick="calcInput('9')"> 9 </button>
+                                    <button onclick="calcInput('log(')"> log </button>
+                                    <button onclick="calcInput('ln(')"> ln </button>
+                                    <button onclick="calcInput(')')"> ) </button>
+                                    
+                                </div>
+                                <div>
+                                    <button onclick="calcInput('0')"> 0 </button>
+                                    <button onclick="calcInput('.')"> . </button>
+                                    <button onclick="calcInput('sin(')"> sin </button>
+                                    <button onclick="calcInput('cos(')"> cos </button>
+                                    <button onclick="calcInput('tan(')"> tan </button>
+                                    <button onclick="calcInput('π')"> π </button>
+                                    
+                                    
+                                </div>
+                                <div>
+                                    <button onclick="calcInput('√(')"> √ </button>
+                                    <button onclick="calcInput('!')"> ! </button>
+                                    <button onclick="calcInput('e^(')"> e^x </button>
+                                    <button onclick="calcInput('^')"> x^y </button>
+                                </div>
+                                <div>
+                                    <button onclick="calcDelete()"> Del </button>
+                                    <button onclick="calcAns()"> Ans </button>
+                                    <button onclick="calcCalculate()"> = </button>
+                                </div>
+                            </div>
+
+
+                            <script>
+                                let lastInputWasEqual = false;
+                                let lastAnswer = '';
+
+                                function toggleCalculator() {
+                                    var calculator = document.getElementById('calculator');
+                                    if (calculator.style.display === 'none') {
+                                        calculator.style.display = 'block';
+                                    } else {
+                                        calculator.style.display = 'none';
+                                    }
+                                }
+                
+                                function calcInput(value) {
+                                    var display = document.getElementById('calc-display');
+                                    if (lastInputWasEqual) {
+                                        if (!isNaN(value) || display.value === 'Error' || display.value === 'NaN' || display.value === 'Infinity') {
+                                            display.value = '';
+                                        }
+                                        lastInputWasEqual = false;
+                                    }
+                                    display.value += value;
+                                }
+                
+                                function calcClear() {
+                                    var display = document.getElementById('calc-display');
+                                    display.value = '';
+                                }
+                
+                                function calcCalculate() {
+                                    var display = document.getElementById('calc-display');
+                                    let expression = display.value
+                                    // List of functions to check for
+                                    var functions = ['sin', 'cos', 'tan', 'log', 'ln', 'e^', '√'];
+
+                                    // Insert multiplication symbol where necessary
+                                    for (var i = 0; i < functions.length; i++) {
+                                        var func = functions[i];
+                                        var regex = new RegExp('(\\d+)' + func + '\\(', 'g');
+                                        expression = expression.replace(regex, '$1*' + func + '(');
+                                    }
+
+                                    // Insert multiplication symbol before opening parenthesis if preceded by a number or closing parenthesis
+                                    expression = expression.replace(/(\d+|\))\(/g, '$1*(')
+                                            .replace(/(\d+)e\^\(/g, '$1*Math.exp(')
+                                            .replace(/(\d+)π/g, '$1*Math.PI')
+
+                                    // Insert multiplication symbol between closing parenthesis and functions
+                                    for (var i = 0; i < functions.length; i++) {
+                                        var func = functions[i];
+                                        var regex = new RegExp('\\)' + func + '\\(', 'g');
+                                        expression = expression.replace(regex, ')*' + func + '(');
+                                    }
+
+                                    expression = expression.replace(/sin\(/g, 'customSin(')
+                                            
+                                            .replace(/cos\(/g, 'customCos(')
+                                            .replace(/tan\(/g, 'customTan(')
+                                            .replace(/log\(/g, 'Math.log10(')
+                                            .replace(/ln\(/g, 'Math.log(')
+                                            .replace(/e\^\(/g, 'Math.exp(')
+                                            .replace(/√\(/g, 'Math.sqrt(')
+                                            .replace(/π/g, 'Math.PI')
+                                            .replace(/(\([^\)]+\))!/g, 'factorial($1)')
+                                            .replace(/(\d+)!/g, 'factorial($1)')
+                                            .replace(/(\d+)\^(\d+)/g, 'Math.pow($1,$2)');
+                                        console.log(expression);
+
+                                    try {                                    
+                                        let result = eval(expression);
+                                        if (/sin|cos|tan/.test(display.value)) {
+                                            result = roundTrigResult(result);
+                                        }
+                                        
+                                        if (isFinite(result) && !isNaN(result)) {
+                                            lastAnswer = result;
+                                        } else {
+                                            result = 'Error';
+                                        }
+                                        display.value = result;
+                                    } catch (e) {
+                                        display.value = 'Error';
+                                    }
+                                    lastInputWasEqual = true;
+                                }
+
+                                function factorial(n) {
+                                    console.log(n)
+                                    if (n < 0 || !Number.isInteger(n)) {
+                                        return 'ERROR'; // Return ERROR for negative or decimal numbers
+                                    }
+                                    if (n === 0 || n === 1) return 1;
+                                    return n * factorial(n - 1);
+                                }
+
+                                function calcAns() {
+                                    var display = document.getElementById('calc-display');
+                                    if (lastInputWasEqual) {
+                                        display.value = '';
+                                        lastInputWasEqual = false;
+                                    }
+                                    display.value += lastAnswer;
+                                }
+
+                                
+                                function customSin(x) {
+                                    const result = Math.sin(x);
+                                    if (Math.abs(result) < 1e-10) {
+                                        return 0;
+                                    } else if (Math.abs(result - 1) < 1e-10) {
+                                        return 1;
+                                    } else if (Math.abs(result + 1) < 1e-10) {
+                                        return -1;
+                                    }
+                                    return result;
+                                }
+
+                                function customCos(x) {
+                                    const result = Math.cos(x);
+                                    if (Math.abs(result) < 1e-10) {
+                                        return 0;
+                                    } else if (Math.abs(result - 1) < 1e-10) {
+                                        return 1;
+                                    } else if (Math.abs(result + 1) < 1e-10) {
+                                        return -1;
+                                    }  else if (Math.abs(x % Math.PI - Math.PI / 2) < 1e-15 || Math.abs(x % Math.PI + Math.PI / 2) < 1e-15) {
+                                        return Number.POSITIVE_INFINITY;
+                                    }
+                                    return result;
+                                }
+
+                                function customTan(x) {
+                                    const result = Math.tan(x);
+                                    if (Math.abs(result) < 1e-10) {
+                                        return 0;
+                                    } else if (Math.abs(result - 1) < 1e-10) {
+                                        return 1;
+                                    } else if (Math.abs(result + 1) < 1e-10) {
+                                        return -1;
+                                    } else if (Math.abs(x % Math.PI - Math.PI / 2) < 1e-10 || Math.abs(x % Math.PI + Math.PI / 2) < 1e-10) {
+                                        return Number.POSITIVE_INFINITY;
+                                    }
+                                    return result;
+                                }
+
+
+
+                                function calcDelete() {
+                                    var display = document.getElementById('calc-display');
+                                    var currentValue = display.value;
+
+                                    // List of functions to check for
+                                    var functions = ['sin', 'cos', 'tan', 'log', 'ln', 'e^'];
+
+                                    // Check if the current value ends with any of the functions
+                                    for (var i = 0; i < functions.length; i++) {
+                                        if (currentValue.endsWith(functions[i])) {
+                                            display.value = currentValue.slice(0, -functions[i].length);
+                                            return;
+                                        }
+                                    }
+
+                                    // Default behavior: delete the last character
+                                    display.value = currentValue.slice(0, -1);
+                                }
+
+                                // Make the calculator draggable
+                                dragElement(document.getElementById("calculator"));
+
+                                function dragElement(elmnt) {
+                                    var pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
+                                    if (document.getElementsByClassName("calculator-header")[0]) {
+                                        // if present, the header is where you move the DIV from:
+                                        document.getElementsByClassName("calculator-header")[0].onmousedown = dragMouseDown;
+                                    } else {
+                                        // otherwise, move the DIV from anywhere inside the DIV:
+                                        elmnt.onmousedown = dragMouseDown;
+                                    }
+
+                                    function dragMouseDown(e) {
+                                        e = e || window.event;
+                                        e.preventDefault();
+                                        // get the mouse cursor position at startup:
+                                        pos3 = e.clientX;
+                                        pos4 = e.clientY;
+                                        document.onmouseup = closeDragElement;
+                                        // call a function whenever the cursor moves:
+                                        document.onmousemove = elementDrag;
+                                    }
+
+                                    function elementDrag(e) {
+                                        e = e || window.event;
+                                        e.preventDefault();
+                                        // calculate the new cursor position:
+                                        pos1 = pos3 - e.clientX;
+                                        pos2 = pos4 - e.clientY;
+                                        pos3 = e.clientX;
+                                        pos4 = e.clientY;
+                                        // set the element's new position:
+                                        elmnt.style.top = (elmnt.offsetTop - pos2) + "px";
+                                        elmnt.style.left = (elmnt.offsetLeft - pos1) + "px";
+                                    }
+
+                                    function closeDragElement() {
+                                        // stop moving when mouse button is released:
+                                        document.onmouseup = null;
+                                        document.onmousemove = null;
+                                    }
+                                }
+
+
+                
+                            </script>
+                
+                        {% endif %}
+
 
                             <!-- End Page Section -->
                             <div id="end-page" style="display:none;">
@@ -211,7 +494,6 @@
                 if (userAnswer) {
                     var correctAnswer = JSON.parse('{{ sub_section_content.questions|tojson }}')[questionId].answer
                     if (correctAnswer.includes(userAnswer)) {
-                        alert('Correct answer! Moving to the next question. ');
 
                         // Update the current question index
                         const currentQuestionIdElement = document.getElementById('current_question_id');
@@ -333,6 +615,8 @@
         {% endif %}
 
         {% endif %}
+
+
 </body>
 </html>
 
