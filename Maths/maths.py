@@ -591,13 +591,15 @@ def sub_section_detail(level, topic_name, unit_name, section_name, sub_section_n
     sub_section = dict(sub_section)
     sub_sections_list = [dict(sub_section) for sub_section in sub_sections]
 
-    sub_section_content = sub_section['content']
-    
-    # Ensure sub_section_content is a dictionary
-    if isinstance(sub_section_content, str):
-        sub_section_content = json.loads(sub_section_content)
 
     sub_section_type = sub_section['type']
+    sub_section_content = sub_section['content']
+    if sub_section_type == 'practice':
+        # Ensure sub_section_content is a dictionary
+        if isinstance(sub_section_content, str):
+            sub_section_content = json.loads(sub_section_content)
+
+
     section_display_name = section['display_name']
     sub_section_display_name = sub_section['display_name']
     title = f"{topic['display_name']} - {unit['display_name']} - {section['display_name']} - {sub_section['display_name']}"
