@@ -395,3 +395,22 @@ body {
 
 
 
+
+/* section_template.css */
+
+.next-btn {
+    background-color: #007bff; /* Primary color */
+    color: white;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 16px;
+    cursor: pointer;
+    display: inline-block;
+    transition: background-color 0.3s ease;
+}
+
+.next-btn:hover {
+    background-color: #0056b3; /* Darker shade for hover effect */
+}

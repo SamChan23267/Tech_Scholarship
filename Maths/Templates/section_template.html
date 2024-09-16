@@ -381,6 +381,11 @@
                     {% endif %}
                 </div>
             </main>
+            {% if next_sub_section %}
+            <div class="next-button">
+                <a href="{{ url_for('sub_section_detail', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name, sub_section_name=next_sub_section.name) }}" class="btn btn-primary next-btn">Next</a>
+            </div>
+            {% endif %}
         </div>
     </div>
 

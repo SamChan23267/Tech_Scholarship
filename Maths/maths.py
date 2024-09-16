@@ -591,6 +591,11 @@ def sub_section_detail(level, topic_name, unit_name, section_name, sub_section_n
     sub_section = dict(sub_section)
     sub_sections_list = [dict(sub_section) for sub_section in sub_sections]
 
+    next_sub_section = None
+    for i, sub_sec in enumerate(sub_sections_list):
+        if sub_sec['name'] == sub_section_name and i + 1 < len(sub_sections_list):
+            next_sub_section = sub_sections_list[i + 1]
+            break
 
     sub_section_type = sub_section['type']
     sub_section_content = sub_section['content']
@@ -624,7 +629,7 @@ def sub_section_detail(level, topic_name, unit_name, section_name, sub_section_n
         calculator = False
 
     conn_topics.close()
-    return render_template('section_template.html', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name, sub_section_name=sub_section_name, sub_section_content=sub_section_content, sub_section_type=sub_section_type, section_display_name=section_display_name, sub_section_display_name=sub_section_display_name, title=title, sub_section_score=sub_section_score, sub_section_maximum_score=sub_section_maximum_score, sub_sections=sub_sections_list, sub_section_id=sub_section_id, calculator=calculator, is_section=False)
+    return render_template('section_template.html', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name, sub_section_name=sub_section_name, sub_section_content=sub_section_content, sub_section_type=sub_section_type, section_display_name=section_display_name, sub_section_display_name=sub_section_display_name, title=title, sub_section_score=sub_section_score, sub_section_maximum_score=sub_section_maximum_score, sub_sections=sub_sections_list, sub_section_id=sub_section_id, calculator=calculator, is_section=False, next_sub_section=next_sub_section)
 
 
 @app.route('/update_score', methods=['POST'])
