@@ -10,7 +10,7 @@ import os
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
 import re
-username_pattern = re.compile(r'^[a-z0-9_-]{3,16}$')
+username_pattern = re.compile(r'^[a-z0-9_-]{6,16}$')
 password_pattern = re.compile(r'^.{6,16}$')
 
 app = Flask(__name__, template_folder='templates')
@@ -126,7 +126,7 @@ def auth():
 
             # Validate username using regex
             if not username_pattern.match(username):
-                flash('Username must be 3-16 characters long and can only contain lowercase letters, numbers, underscores, and hyphens.', 'alert')
+                flash('Username must be 6-16 characters long and can only contain lowercase letters, numbers, underscores, and hyphens.', 'alert')
                 return redirect(url_for('auth', action='signup'))
 
             # Validate password using regex
@@ -201,7 +201,7 @@ def user_home():
 def logout():
     if 'user' in session:
         session.pop('user', None)
-        flash('You have been locked out!', 'info')
+        flash('You have been logged out!', 'info')
     return redirect(url_for('home'))
     
 
