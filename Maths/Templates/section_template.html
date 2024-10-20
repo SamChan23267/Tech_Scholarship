@@ -42,12 +42,11 @@
                     {% else %} <!--if not section-->
                         <h1>{{ title }}</h1>
                         {% if sub_section_type == 'video' %}
-                            <video controls>
-                                <source src="{{ sub_section_content }}" type="video/mp4">
-                                Your browser does not support the video tag.
-                            </video>
+                            {{ sub_section_content|safe }}
                         {% elif sub_section_type == 'notes' %}
-                            <p>{{ sub_section_content|safe }}</p>
+                            <div class="notes-container" style="margin: 20px auto; padding: 50px">
+                                {{ sub_section_content|safe }}
+                            </div>
                         {% elif sub_section_type == 'practice' %}
                             <!-- Start Page Section -->
                             <div id="start-page">
@@ -382,6 +381,11 @@
                     {% endif %}
                 </div>
             </main>
+            {% if next_sub_section %}
+            <div class="next-button">
+                <a href="{{ url_for('sub_section_detail', level=level, topic_name=topic_name, unit_name=unit_name, section_name=section_name, sub_section_name=next_sub_section.name) }}" class="btn btn-primary next-btn">Next</a>
+            </div>
+            {% endif %}
         </div>
     </div>
 

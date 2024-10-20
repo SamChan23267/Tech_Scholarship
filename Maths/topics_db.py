@@ -50,7 +50,6 @@ CREATE TABLE IF NOT EXISTS sub_sections (
     type TEXT NOT NULL,
     name TEXT NOT NULL,
     display_name TEXT NOT NULL,
-    maximum_score INTEGER NOT NULL,
     content TEXT,
     FOREIGN KEY (section_id) REFERENCES sections (id)
 )
