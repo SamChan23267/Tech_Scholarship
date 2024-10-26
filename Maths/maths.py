@@ -123,6 +123,7 @@ def auth():
             email = request.form.get('register email')
             password = request.form.get('create password')
             username = request.form.get('username')
+            confirm_password = request.form.get('confirm password')
 
             # Validate username using regex
             if not username_pattern.match(username):
@@ -132,6 +133,11 @@ def auth():
             # Validate password using regex
             if not password_pattern.match(password):
                 flash('Password must be 6-16 characters long.', 'alert')
+                return redirect(url_for('auth', action='signup'))
+            
+            # Confirm password
+            if password != confirm_password:
+                flash('Passwords do not match!', 'danger')
                 return redirect(url_for('auth', action='signup'))
             
             # check if the email already exists

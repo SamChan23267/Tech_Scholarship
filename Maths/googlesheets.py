@@ -20,7 +20,7 @@ data_units = sheet_units.get_all_records()
 data_sections = sheet_sections.get_all_records()
 data_sub_sections = sheet_sub_sections.get_all_records()
 
-# Print data to verify
+# Create the topics table
 conn_topics = sqlite3.connect('topics.db')
 cursor_topics = conn_topics.cursor()
 
