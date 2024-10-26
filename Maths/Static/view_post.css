@@ -1,0 +1,110 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f4f9;
+    margin: 0;
+    padding: 0;
+}
+
+.post-detail {
+    max-width: 800px;
+    margin: 50px auto;
+    background-color: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.post-detail h2 {
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.post-detail p {
+    color: #555;
+    line-height: 1.6;
+}
+
+.post-detail small {
+    display: block;
+    color: #888;
+    margin-top: 10px;
+}
+
+.post-detail h3 {
+    color: #333;
+    margin-top: 30px;
+}
+
+.comments {
+    margin-top: 30px;
+}
+
+.comment {
+    background-color: #f9f9f9;
+    padding: 15px;
+    border-radius: 5px;
+    margin-bottom: 15px;
+    box-shadow: 0 0 5px rgba(0, 0, 0, 0.05);
+}
+
+.comment h4 {
+    color: #444;
+    margin-bottom: 5px;
+}
+
+.comment p {
+    color: #666;
+    line-height: 1.4;
+}
+
+.comment small {
+    color: #999;
+}
+
+.add-comment {
+    margin-top: 40px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+}
+
+.add-comment h3 {
+    color: #333;
+    margin-bottom: 15px;
+}
+
+.add-comment-form .form-group {
+    margin-bottom: 15px;
+}
+
+.add-comment-form label {
+    margin-bottom: 5px;
+    color: #555;
+}
+
+.add-comment-form input[type="text"],
+.add-comment-form textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+.add-comment-form textarea {
+    resize: vertical;
+}
+
+.add-comment-form .btn {
+    background-color: #007bff;
+    color: #fff;
+    padding: 10px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.add-comment-form .btn:hover {
+    background-color: #0056b3;
+}

@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='view_post.css') }}">
+    <title>{{ post['title'] }}</title>
+</head>
+<body>
+
+    {% include 'navbar_auth.html' %}
+
+    {% include 'flashmessage.html' %}
+
+    <section class="post-detail">
+        <h2>{{ post['title'] }}</h2>
+        <p>{{ post['content'] }}</p>
+        <small>Posted by {{ post['username'] }} on {{ post['created_at'] }}</small>
+
+        <h3>Comments</h3>
+        <div class="comments">
+            {% for comment in comments %}
+                <div class="comment">
+                    <h4>{{ comment['title'] }}</h4>
+                    <p>
+                        {% if comment['content']|length > 1000 %}
+                            <span class="comment-preview">{{ comment['content'][:1000] }}...</span>
+                            <span class="comment-full" style="display: none;">{{ comment['content'] }}</span>
+                            <button class="show-all-btn" onclick="toggleComment(this)">Show All</button>
+                        {% else %}
+                            {{ comment['content'] }}
+                        {% endif %}
+                    </p>
+                    <small>Commented by {{ comment['username'] }} on {{ comment['created_at'] }}</small>
+                </div>
+            {% else %}
+                <p>No comments yet. Be the first to comment!</p>
+            {% endfor %}
+        </div>
+
+        {% if session['user_id'] %}
+        <section class="add-comment">
+            <h3>Add a Comment</h3>
+            <form action="{{ url_for('add_comment', post_id=post['id']) }}" method="post" class="add-comment-form">
+                <div class="form-group">
+                    <label for="comment-title">Title</label>
+                    <input type="text" id="comment-title" name="title" required>
+                </div>
+                <div class="form-group">
+                    <label for="comment-content">Content</label>
+                    <textarea id="comment-content" name="content" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="btn">Submit</button>
+            </form>
+        </section>
+        {% endif %}
+    </section>
+    <script>
+        function toggleComment(button) {
+            const commentPreview = button.previousElementSibling.previousElementSibling;
+            const commentFull = button.previousElementSibling;
+            
+            if (commentFull.style.display === 'none') {
+                commentFull.style.display = 'inline';
+                commentPreview.style.display = 'none';
+                button.textContent = 'Show Less';
+            } else {
+                commentFull.style.display = 'none';
+                commentPreview.style.display = 'inline';
+                button.textContent = 'Show All';
+            }
+        }
+    </script>
+</body>
+</html>

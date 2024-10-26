@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='forum.css') }}">
+    <title>Forum</title>
+</head>
+<body>
+
+    {% include 'navbar_auth.html' %}
+
+    {% include 'flashmessage.html' %}
+
+    <section class="forum">
+        <h2>Forum</h2>
+        <div class="create-post">
+            <a href="{{ url_for('create_post') }}" class="btn">Create New Post</a>
+        </div>
+        <div class="posts">
+            {% for post in posts %}
+                <div class="post">
+                    <h3><a href="{{ url_for('view_post', post_id=post['id']) }}">{{ post['title'] }}</a></h3>
+                    <p>
+                        {{ post['content'][:100] }}
+                        {% if post['content']|length > 100 %}
+                            ...
+                        {% endif %}
+                    </p>
+                    <small>Posted by {{ post['username'] }} on {{ post['created_at'] }}</small>
+                </div>
+            {% endfor %}
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Get the current URL path
+            const currentPath = window.location.pathname;
+
+            // Function to set the active class based on the current URL
+            function setActiveClass() {
+                // Remove active class from all post links
+                document.querySelectorAll('.post a').forEach(function(element) {
+                    element.classList.remove('active');
+                });
+
+                // Check for post detail URL
+                document.querySelectorAll('.post a').forEach(function(element) {
+                    const href = element.getAttribute('href');
+                    if (currentPath === href) {
+                        element.classList.add('active');
+                    }
+                });
+            }
+
+            // Set the active class when the page loads
+            setActiveClass();
+        });
+
+        function toggleMenu() {
+            const navLinks = document.querySelector('.nav-links');
+            navLinks.classList.toggle('active');
+        }
+    </script>
+</body>
+</html>

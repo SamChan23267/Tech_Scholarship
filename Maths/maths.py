@@ -6,6 +6,7 @@ import requests
 import json
 import random
 from functools import wraps
+from datetime import datetime
 import os
 os.environ['OAUTHLIB_INSECURE_TRANSPORT'] = '1'
 
@@ -16,6 +17,9 @@ password_pattern = re.compile(r'^.{6,16}$')
 app = Flask(__name__, template_folder='templates')
 app.secret_key = 'your_secret_key'
 
+
+import pytz
+auckland_tz = pytz.timezone('Pacific/Auckland')
 
 def login_required(f):
     @wraps(f)
@@ -64,12 +68,21 @@ def get_topics_db_connection():
         conn_topics.row_factory = sqlite3.Row
     return conn_topics
 
+def get_forum_db_connection():
+    conn_forum = getattr(g, 'conn_forum', None)
+    if conn_forum is None:
+        conn_forum = g.conn_forum = sqlite3.connect('forum.db')
+        conn_forum.row_factory = sqlite3.Row
+    return conn_forum
+
 @app.teardown_appcontext
 def close_conn(exception):
     if 'conn_users' in g:
         g.conn_users.close()
     if 'conn_topics' in g:
         g.conn_topics.close()
+    if 'conn_forum' in g:
+        g.conn_forum.close()    
 
 def get_user_scores(user_id):
     conn_users = get_users_db_connection()
@@ -651,6 +664,129 @@ def update_score():
     update_user_score(user_id, sub_section_id, score)
     return jsonify({'success': True})
 
+@app.route('/forum')
+def forum():
+    conn_forum = get_forum_db_connection()
+    cursor_forum = conn_forum.cursor()
+    
+    conn_users = get_users_db_connection()
+    cursor_users = conn_users.cursor()
+    
+    cursor_forum.execute('SELECT * FROM posts')
+    posts = cursor_forum.fetchall()
+    
+    # Retrieve usernames for each post
+    posts_with_usernames = []
+    for post in posts:
+        cursor_users.execute('SELECT username FROM users WHERE id = ?', (post['user_id'],))
+        user = cursor_users.fetchone()
+        post_with_username = dict(post)
+        post_with_username['username'] = user['username'] if user else 'Unknown'
+        post_with_username['created_at'] = datetime.fromisoformat(post['created_at']).astimezone(auckland_tz).strftime("%Y-%m-%dT%H:%M:%S")
+        posts_with_usernames.append(post_with_username)
+    
+    conn_forum.close()
+    conn_users.close()
+    
+    return render_template('forum.html', posts=posts_with_usernames)
+
+@app.route('/forum/create_post', methods=['GET', 'POST'])
+@login_required
+def create_post():
+    if request.method == 'POST':
+        user_id = session['user_id']
+        title = request.form['title']
+        content = request.form['content']
+        
+        conn_forum = get_forum_db_connection()
+        cursor_forum = conn_forum.cursor()
+        cursor_forum.execute('''
+            INSERT INTO posts (user_id, title, content)
+            VALUES (?, ?, ?)
+        ''', (user_id, title, content))
+        conn_forum.commit()
+        conn_forum.close()
+        
+        flash('Post created successfully!', 'success')
+        return redirect(url_for('forum'))
+    
+    return render_template('create_post.html')
+
+@app.route('/forum/post/<int:post_id>')
+def view_post(post_id):
+    conn_forum = get_forum_db_connection()
+    cursor_forum = conn_forum.cursor()
+    
+    conn_users = get_users_db_connection()
+    cursor_users = conn_users.cursor()
+    
+    cursor_forum.execute('SELECT * FROM posts WHERE id = ?', (post_id,))
+    post = cursor_forum.fetchone()
+    
+
+    
+    # Retrieve username for the post
+    cursor_users.execute('SELECT username FROM users WHERE id = ?', (post['user_id'],))
+    user = cursor_users.fetchone()
+
+    post = dict(post) if user else 'Unknown'
+    post['username'] = user['username']
+    post['created_at'] = datetime.fromisoformat(post['created_at']).astimezone(auckland_tz).strftime("%Y-%m-%dT%H:%M:%S")
+
+    # Parse comments from JSON string
+    comments = json.loads(post['comments']) if post['comments'] else []
+    for comment in comments:
+        cursor_users.execute('SELECT username FROM users WHERE id = ?', (comment['user_id'],))
+        user = cursor_users.fetchone()
+        comment['username'] = user['username'] if user else 'Unknown'
+        comment['created_at'] = datetime.fromisoformat(comment['created_at']).astimezone(auckland_tz).strftime("%Y-%m-%dT%H:%M:%S")
+    
+    conn_forum.close()
+    conn_users.close()
+
+    return render_template('view_post.html', post=post, comments=comments)
+
+
+@app.route('/forum/post/<int:post_id>/add_comment', methods=['POST'])
+@login_required
+def add_comment(post_id):
+    user_id = session['user_id']
+    title = request.form['title']
+    content = request.form['content']
+
+    conn_forum = get_forum_db_connection()
+    cursor_forum = conn_forum.cursor()
+    cursor_forum.execute('SELECT comments FROM posts WHERE id = ?', (post_id,))
+    post = cursor_forum.fetchone()
+
+    # Ensure comments is a list
+    try:
+        comments = json.loads(post['comments']) if post['comments'] else []
+        if not isinstance(comments, list):
+            comments = []
+    except json.JSONDecodeError:
+        comments = []
+
+    new_comment = {
+        'id': len(comments) + 1,
+        'user_id': user_id,
+        'title': title,
+        'content': content,
+        'created_at': datetime.now().isoformat()
+    }
+    comments.append(new_comment)
+
+    # Update the comments column with the new JSON string
+    cursor_forum.execute('''
+        UPDATE posts
+        SET comments = ?
+        WHERE id = ?
+    ''', (json.dumps(comments), post_id))
+    conn_forum.commit()
+    conn_forum.close()
+
+    flash('Comment added successfully!', 'success')
+    return redirect(url_for('view_post', post_id=post_id))
 
 
 
